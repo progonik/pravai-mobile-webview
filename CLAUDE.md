@@ -6,16 +6,16 @@ the boundary to it (no shell exists yet -- see "Status" below).
 
 This project was scaffolded from `progress-master-app` (a sibling product's
 mobile webview, same architecture) by stripping its e-commerce domain and
-rewiring auth to PravAI's own backend. The design layer went through two
-passes: first a port of PravAI's poster-style prototype (`design/pravai.html`
-in the main `pravai` repo), then a deliberate departure from it into an
-iOS-glass/glassmorphism look, per product direction. `design/pravai.html` is
-no longer the visual source of truth for this app — only its mustard brand
-color (`#FFC531`) carries over. The **app mechanics** (press states, screen
-transitions, scroll memory, the tabbar's measurement/render split, safe-area
-handling) are carried over unchanged from `progress-master-app` on purpose:
-they're solved interaction problems, not decisions specific to any product's
-branding.
+rewiring auth to PravAI's own backend. The design layer went through three
+passes: a port of PravAI's poster-style prototype (`design/pravai.html` in the
+main `pravai` repo), then an iOS-glass/glassmorphism look, then the current
+one -- Telegram/iMe-style floating glass chrome -- per product direction.
+`design/pravai.html` is no longer the visual source of truth for this app —
+only its mustard brand color (`#FFC531`) carries over. The **app mechanics**
+(press states, screen transitions, scroll memory, the tabbar's
+measurement/render split, safe-area handling) are carried over unchanged from
+`progress-master-app` on purpose: they're solved interaction problems, not
+decisions specific to any product's branding.
 
 ## Status (read this before adding a screen)
 
@@ -39,43 +39,59 @@ mobile-facing endpoint on the backend (`pravai` repo) instead.
 
 ## Design primitives
 
-Everything below is defined once in `src/index.css`. It's an iOS-glass
-(glassmorphism) look: translucent, blurred surfaces over a warm ambient
-backdrop, soft shadows, no hard edges or offset "pop" shapes. Mustard
-(`--primary: #FFC531`) is the one carried-over brand color; everything else
-here is new.
+Everything below is defined once in `src/index.css`. This is a single dark
+theme (no light mode -- see the "single palette" note in that file) built
+around a distinction between two materials:
+
+- **Content** (`bg-card`, list rows, form fields) is flat and opaque
+  (`#1C1C1E` on a `#000` canvas). No blur, no translucency -- it's what's
+  scrolling *underneath* the chrome.
+- **Chrome** (`bg-chrome` + `.glass`: the tab bar, header back/action
+  buttons, bottom sheets) is translucent and blurred
+  (`backdrop-filter: blur(24px) saturate(180%)`), and floats as its own
+  rounded-full "island" inset from the screen edges -- never a bar flush with
+  them. The blur only reads as glass because there's opaque black-canvas
+  content behind it to blur; that's the whole point of the content/chrome
+  split, and why this app has no light mode to fall back to.
+
+Mustard (`--primary: #FFC531`) is the one brand color carried through every
+pass this app has been through.
 
 **Fonts.** System font stack (`-apple-system, BlinkMacSystemFont, 'SF Pro
 Text'/'SF Pro Display', ...`) for both `font-display` and body text — no
-embedded webfonts, so the CSS bundle is small (~33KB / 7.4KB gzip) and text
-renders as San Francisco on a real iOS device with zero font-loading cost.
+embedded webfonts, so the CSS bundle stays small and text renders as San
+Francisco on a real iOS device with zero font-loading cost.
 
-**Glass.** `.glass` (and the blanket `.bg-card` rule) apply
-`backdrop-filter: blur(24px) saturate(180%)` — this is what makes card/sheet/
-header surfaces read as frosted panels with the warm `.bg-decor` backdrop
-bleeding through, rather than flat fills. Anything meant to look like an iOS
-sheet, tab bar, or header should carry `.glass` (or use `bg-card`, which
-already has it baked in).
+**Chrome shape.** Every floating control is its own pill, not part of a
+spanning bar: `AppTabbar` is `absolute`, inset `left-3.5 right-3.5` off the
+bottom with `rounded-full`; `PageHeader`'s back button is a standalone `w-10
+h-10 rounded-full` circle, not the left edge of a header bar; a bottom sheet
+(see `MyInfoPage`'s language picker) is `rounded-[28px]` on *all four*
+corners and inset from every edge, not just the top two flush with the
+screen's bottom/sides. Content pages using `PageHeader` are `relative` with
+the header `absolute` over them -- the page supplies its own top padding
+(`calc(var(--safe-top) + ~50-56px)`) to clear it, and tab-root pages
+(`HomePage`, `TestsPage`, etc.) pad their bottom with `pb-28` to clear the
+floating tab bar instead of it taking flex space.
 
-**Elevation.** All shadows are soft and ambient now — no hard offsets.
-`shadow-brand` (mustard-tinted glow) marks the primary CTA and brand tiles;
-`shadow-float` is for the welcome screen's icon and sheets/popovers;
-`shadow-raised` covers headers-once-scrolled; `shadow-glass`/`shadow-card`
-is the default resting elevation for cards. Press feedback is `.press`
-(opacity dip + slight scale) and `.press-tab` (opacity dip only) — there is
-no `press-pop`/hard-edge-collapse interaction anymore.
+**Elevation.** All shadows are soft and ambient — no hard offsets.
+`shadow-chrome` is for the floating pills; `shadow-brand` (mustard-tinted
+glow) marks the primary CTA and brand tiles; `shadow-float` is for the
+welcome screen's icon. Flat content cards carry `shadow-card: none` — their
+separation from the canvas comes from the `#1C1C1E`-on-`#000` color step, not
+a shadow. Press feedback is `.press` (opacity dip + slight scale) and
+`.press-tab` (opacity dip only).
 
 **Buttons.** Primary actions are full pill shapes (`rounded-full`) in
-`bg-primary text-primary-foreground`, not the poster's bordered/uppercase
-block — match `LoginPage.tsx`'s submit button or `MyInfoPage.tsx`'s edit
-button for the current convention.
+`bg-primary text-primary-foreground` — match `LoginPage.tsx`'s submit button
+or `MyInfoPage.tsx`'s edit button for the current convention.
 
-**Surfaces.** `bg-background` (the paper) → `bg-card` (a surface on it) →
-`bg-surface-sunken` (a well *inside* a card). Divider between cards is the
-quiet `border-border` (`--line`); a divider *within* one is `border-hairline`.
-`border-edge` is the loud one — thick, always near-black-on-paper /
-cream-on-ink regardless of theme — for anything meant to look cut out of
-card stock: buttons, the tabbar, page headers.
+**Surfaces.** `bg-background` (`#000`, the canvas) → `bg-card` (`#1C1C1E`,
+flat content) → `bg-chrome` + `.glass` (translucent, floating only). Divider
+between cards is the quiet `border-border`; a divider *within* one is
+`border-hairline`. Don't reach for `bg-card` on something meant to float over
+content -- that's what `bg-chrome`/`.glass` are for, and mixing the two
+undoes the content/chrome distinction the whole theme depends on.
 
 **Press.** Every tappable thing bigger than an icon gets `.press` — it sinks
 under the finger on the same curve the sheets use. Full-bleed list rows use

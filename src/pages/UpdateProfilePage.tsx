@@ -37,10 +37,10 @@ export function UpdateProfilePage({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="relative flex flex-col h-full bg-background">
       <PageHeader title={t('profile.editInfo')} onBack={onDone} />
 
-      <div className="flex-1 overflow-y-auto px-6 pt-6 pb-6">
+      <div className="flex-1 overflow-y-auto px-6 pb-6" style={{ paddingTop: 'calc(var(--safe-top) + 56px)' }}>
         <div className="flex flex-col items-center gap-2 py-1">
           <button
             onClick={() => fileInputRef.current?.click()}

@@ -34,7 +34,7 @@ export function ProfilePage() {
   const currentLangLabel = LANGUAGES.find((l) => l.code === lang)?.native ?? lang
 
   return (
-    <div className="flex-1 overflow-y-auto flex flex-col top-inset px-4 pb-8">
+    <div className="flex-1 overflow-y-auto flex flex-col top-inset px-4 pb-28">
       {/* Header */}
       <button
         onClick={() => navigate('/profile/info')}

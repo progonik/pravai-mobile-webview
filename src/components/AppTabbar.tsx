@@ -12,9 +12,11 @@ const tabs = [
 ] as const
 
 /**
- * Bottom nav, Apple's own convention: a frosted glass bar with a hairline
- * top edge, and the active tab marked by tinting its icon+label in the
- * accent colour -- not a filled block or a highlight sliding underneath.
+ * Bottom nav, iMe/Telegram's convention: a floating rounded-full pill inset
+ * from the screen edges -- not a bar flush with them -- so the black canvas
+ * shows on all four sides and the blur reads as a chrome "island" rather than
+ * painted-on chrome. Absolutely positioned (see AppShell): content scrolls
+ * full-bleed underneath it, which is what makes the blur visible at all.
  */
 export function AppTabbar() {
   const navigate = useNavigate()
@@ -35,8 +37,9 @@ export function AppTabbar() {
   }
 
   return (
-    <div className="glass shrink-0 flex items-center justify-around border-t border-hairline bg-card px-1 pt-1.5"
-      style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 6px)' }}
+    <div
+      className="glass absolute left-3.5 right-3.5 z-30 flex items-center justify-around rounded-full bg-chrome border border-chrome-border shadow-chrome px-1"
+      style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 14px)', height: 62 }}
     >
       {tabs.map(({ path, labelKey, Icon }) => {
         const isActive = pathname === path || (pathname === '/' && path === '/home')
@@ -46,16 +49,16 @@ export function AppTabbar() {
             key={path}
             onClick={() => openTab(path, isActive)}
             aria-current={isActive ? 'page' : undefined}
-            className="press-tab flex-1 h-[52px] flex flex-col items-center justify-center gap-0.5"
+            className="press-tab flex-1 h-full flex flex-col items-center justify-center gap-0.5"
           >
             <Icon
-              size={24}
+              size={22}
               strokeWidth={isActive ? 2.2 : 1.8}
-              className={isActive ? 'text-primary' : 'text-muted-foreground'}
+              className={isActive ? 'text-primary' : 'text-chrome-foreground/55'}
             />
             <span
               className={`text-[10px] leading-none font-semibold ${
-                isActive ? 'text-primary' : 'text-muted-foreground'
+                isActive ? 'text-primary' : 'text-chrome-foreground/55'
               }`}
             >
               {t(labelKey)}

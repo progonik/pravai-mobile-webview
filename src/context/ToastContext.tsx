@@ -27,9 +27,9 @@ const ICONS: Record<ToastVariant, ReactNode> = {
 }
 
 const ICON_STYLES: Record<ToastVariant, string> = {
-  success: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400',
-  error: 'bg-red-100 text-red-500 dark:bg-red-500/15 dark:text-red-400',
-  liked: 'bg-red-100 text-red-500 dark:bg-red-500/15 dark:text-red-400',
+  success: 'bg-emerald-500/15 text-emerald-400',
+  error: 'bg-red-500/15 text-red-400',
+  liked: 'bg-red-500/15 text-red-400',
   unliked: 'bg-input-background text-muted-foreground',
 }
 

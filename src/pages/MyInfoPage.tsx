@@ -28,10 +28,10 @@ export function MyInfoPage() {
   ]
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="relative flex flex-col h-full bg-background">
       <PageHeader title={t('profile.myInfo')} />
 
-      <div className="flex-1 overflow-y-auto px-4 py-4">
+      <div className="flex-1 overflow-y-auto px-4 pb-4" style={{ paddingTop: 'calc(var(--safe-top) + 50px)' }}>
         <div className="rounded-2xl border border-border bg-card overflow-hidden">
           {rows.map((row) => (
             <div key={row.label} className="flex items-center gap-3 px-4 py-3.5 border-b border-hairline last:border-0">
@@ -71,26 +71,29 @@ export function MyInfoPage() {
       </div>
 
       {pickingLang && (
-        <div className="absolute inset-0 z-50 flex flex-col justify-end">
+        <div
+          className="absolute inset-0 z-50 flex flex-col justify-end px-3.5"
+          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 14px)' }}
+        >
           <div
             className="absolute inset-0 animate-backdrop-in"
-            style={{ background: 'rgba(0,0,0,0.5)' }}
+            style={{ background: 'rgba(0,0,0,0.55)' }}
             onClick={() => setPickingLang(false)}
           />
-          <div
-            className="relative bg-card rounded-t-3xl px-4 pt-3 animate-sheet-in"
-            style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 24px)' }}
-          >
-            <div className="w-10 h-1 rounded-full bg-border mx-auto mb-5" />
-            <p className="text-[15px] font-bold text-foreground text-center mb-3">{t('lang.label')}</p>
+          {/* Inset on all sides, fully rounded -- a floating chrome pill like
+              the tab bar and header buttons, not a sheet flush with the
+              screen's bottom/left/right edges. */}
+          <div className="glass relative bg-chrome border border-chrome-border shadow-chrome rounded-[28px] px-4 pt-3 pb-2 animate-sheet-in">
+            <div className="w-10 h-1 rounded-full bg-white/25 mx-auto mb-5" />
+            <p className="text-[15px] font-bold text-chrome-foreground text-center mb-3">{t('lang.label')}</p>
             {LANGUAGES.map((l: { code: Lang; native: string; flag: string }) => (
               <button
                 key={l.code}
                 onClick={() => { setLang(l.code); setPickingLang(false) }}
-                className={`press-row w-full flex items-center gap-3 px-3 py-3.5 rounded-xl ${lang === l.code ? 'bg-primary/5' : ''}`}
+                className={`press-row w-full flex items-center gap-3 px-3 py-3.5 rounded-2xl ${lang === l.code ? 'bg-primary/15' : ''}`}
               >
                 <span className="text-xl leading-none">{l.flag}</span>
-                <span className="flex-1 text-left text-[14px] font-semibold text-foreground">{l.native}</span>
+                <span className="flex-1 text-left text-[14px] font-semibold text-chrome-foreground">{l.native}</span>
               </button>
             ))}
           </div>

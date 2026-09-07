@@ -12,7 +12,7 @@ export function HomePage() {
   const t = useT()
 
   return (
-    <div className="flex-1 overflow-y-auto flex flex-col top-inset px-4 pb-6">
+    <div className="flex-1 overflow-y-auto flex flex-col top-inset px-4 pb-28">
       <div className="pt-2 pb-4">
         <p className="text-[13px] text-muted-foreground">{t('home.greeting')}</p>
         <p className="font-display text-[20px] font-bold text-foreground">
