@@ -13,12 +13,12 @@ export type ThemePref = 'light' | 'dark'
 export function getThemePref(): ThemePref {
   try {
     // Anything else — unset, or a 'system' left over from an older build —
-    // falls back to light.
-    if (localStorage.getItem(STORAGE_KEYS.theme) === 'dark') return 'dark'
+    // falls back to dark, this app's default look.
+    if (localStorage.getItem(STORAGE_KEYS.theme) === 'light') return 'light'
   } catch {
     // Private mode: fall through to the default.
   }
-  return 'light'
+  return 'dark'
 }
 
 export function setThemePref(pref: ThemePref) {

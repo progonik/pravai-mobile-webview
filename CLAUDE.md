@@ -39,20 +39,31 @@ mobile-facing endpoint on the backend (`pravai` repo) instead.
 
 ## Design primitives
 
-Everything below is defined once in `src/index.css`. This is a single dark
-theme (no light mode -- see the "single palette" note in that file) built
-around a distinction between two materials:
+Everything below is defined once in `src/index.css`, as a light/dark pair
+(`:root` is light, `html.dark` overrides -- see `src/lib/theme.ts`; dark is
+the app's *default*, light is the opt-in choice, the reverse of the usual
+convention). Both palettes share the same structure: a distinction between
+two materials:
 
-- **Content** (`bg-card`, list rows, form fields) is flat and opaque
-  (`#1C1C1E` on a `#000` canvas). No blur, no translucency -- it's what's
+- **Content** (`bg-card`, list rows, form fields) is flat and opaque (a
+  content-colour step above the canvas colour -- `#1C1C1E` on `#000` in dark,
+  `#F7F7F8` on `#FFFFFF` in light). No blur, no translucency -- it's what's
   scrolling *underneath* the chrome.
 - **Chrome** (`bg-chrome` + `.glass`: the tab bar, header back/action
   buttons, bottom sheets) is translucent and blurred
   (`backdrop-filter: blur(24px) saturate(180%)`), and floats as its own
   rounded-full "island" inset from the screen edges -- never a bar flush with
-  them. The blur only reads as glass because there's opaque black-canvas
+  them. The blur only reads as glass because there's opaque canvas-colour
   content behind it to blur; that's the whole point of the content/chrome
-  split, and why this app has no light mode to fall back to.
+  split, and why both palettes keep a strong canvas/card contrast.
+
+The switcher lives in `MyInfoPage` ("Mode" row, next to "Language"): it calls
+`setThemePref`/reads `getThemePref` from `src/lib/theme.ts`, which toggles the
+`dark` class on `<html>` and persists the choice to `localStorage`
+(`STORAGE_KEYS.theme`). `setThemePref` only touches the DOM/storage, not React
+state -- any component displaying the current mode (like that row's own
+label) has to hold its own `useState(() => getThemePref())` and update it
+alongside the call, the same pattern `LocaleContext` uses for language.
 
 Mustard (`--primary: #FFC531`) is the one brand color carried through every
 pass this app has been through.

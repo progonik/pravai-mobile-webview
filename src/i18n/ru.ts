@@ -48,6 +48,9 @@ export const ru: Record<TranslationKey, string> = {
   'profile.language': 'Язык',
   'profile.logout': 'Выйти',
   'profile.editInfo': 'Редактировать',
+  'profile.mode': 'Тема',
+  'profile.modeDark': 'Тёмная',
+  'profile.modeLight': 'Светлая',
 
   'field.fullName': 'Полное имя',
   'field.fullNamePlaceholder': 'Ваше полное имя',

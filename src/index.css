@@ -1,70 +1,75 @@
 @import 'tailwindcss';
 
-/* The app is single-theme now (see the token block below) -- there is no
-   light palette to switch to. `src/lib/theme.ts` still toggles an `html.dark`
-   class (dead weight kept only so it's cheap to reintroduce a real light mode
-   later), but nothing in this file reacts to it. */
+/* Dark mode is class-driven (`html.dark`, toggled by src/lib/theme.ts's
+   setThemePref/installTheme), not media-driven: the choice lives in Profile,
+   and inside a webview shell `prefers-color-scheme` isn't guaranteed to
+   reflect the OS anyway. Dark is the app's default (see theme.ts) -- light is
+   the opt-in alternative, not the other way around. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ── Design tokens (PravAI, Telegram/iMe-style floating glass) ─────────────
-   A single dark theme, not a light/dark pair: a near-black canvas with
-   opaque, flat content surfaces (list rows, cards, form fields) and a
-   separate "chrome" material -- translucent, blurred, rounded-full pills --
-   reserved for navigation (tab bar, header buttons) and overlays (sheets).
-   The chrome only reads as glass because there's a black canvas with real
-   content behind it to blur; that's why this app no longer has a light mode.
-   PravAI's mustard accent is the one thing carried through every pass. */
+   Both palettes share one structure: opaque, flat content surfaces (list
+   rows, cards, form fields) versus a separate "chrome" material --
+   translucent, blurred, rounded-full pills -- reserved for navigation (tab
+   bar, header buttons) and overlays (sheets). Chrome only reads as glass
+   because there's opaque canvas-colour content behind it to blur; that's why
+   both palettes keep a strong canvas/card contrast rather than the softer
+   steps a typical light UI uses. PravAI's mustard accent is the one thing
+   carried through every pass this app has been through, and holds its hue in
+   both palettes. */
 :root {
-  --background: #000000;
-  --foreground: #F2F2F4;
-  /* Flat and opaque on purpose -- a resting content surface, not glass. */
-  --card: #1C1C1E;
-  --card-foreground: #F2F2F4;
+  --background: #FFFFFF;
+  --foreground: #0B0B0C;
+  /* A hair off pure white so it reads as a distinct resting surface -- flat
+     and opaque on purpose, not glass. */
+  --card: #F7F7F8;
+  --card-foreground: #0B0B0C;
   --primary: #FFC531;
   --primary-foreground: #241A00;
-  --primary-hover: #FFCF52;
-  --secondary: rgba(255, 255, 255, 0.06);
-  --secondary-foreground: #F2F2F4;
-  --muted: rgba(255, 255, 255, 0.06);
-  --muted-foreground: #8E8E93;
+  --primary-hover: #F0B61E;
+  --secondary: rgba(0, 0, 0, 0.04);
+  --secondary-foreground: #0B0B0C;
+  --muted: rgba(0, 0, 0, 0.04);
+  --muted-foreground: #6B6B70;
   --accent: rgba(255, 197, 49, 0.14);
-  --accent-foreground: #FFD873;
-  --destructive: #FF453A;
+  --accent-foreground: #7A5A00;
+  --destructive: #FF3B30;
   --destructive-foreground: #FFFFFF;
-  --success: #32D74B;
-  --success-foreground: #32D74B;
+  --success: #22A55A;
+  --success-foreground: #1F8A4C;
   --warning: #FFC531;
-  --border: rgba(255, 255, 255, 0.09);
-  --input-background: rgba(255, 255, 255, 0.07);
+  --border: rgba(0, 0, 0, 0.08);
+  --input-background: rgba(0, 0, 0, 0.045);
   --ring: #FFC531;
 
-  --edge: rgba(255, 255, 255, 0.12);
-  --hairline: rgba(255, 255, 255, 0.07);
-  --surface-raised: rgba(255, 255, 255, 0.07);
-  --surface-sunken: rgba(255, 255, 255, 0.04);
+  --edge: rgba(0, 0, 0, 0.08);
+  --hairline: rgba(0, 0, 0, 0.06);
+  --surface-raised: rgba(0, 0, 0, 0.04);
+  --surface-sunken: rgba(0, 0, 0, 0.035);
 
   /* The floating-pill material: tab bar, header back/action buttons, bottom
      sheets. Always paired with `.glass` (backdrop-filter) at the call site --
      the colour alone is just a flat tint, the blur is what reads as glass. */
-  --chrome: rgba(40, 40, 44, 0.72);
-  --chrome-foreground: #F2F2F4;
-  --chrome-border: rgba(255, 255, 255, 0.1);
+  --chrome: rgba(255, 255, 255, 0.72);
+  --chrome-foreground: #0B0B0C;
+  --chrome-border: rgba(0, 0, 0, 0.08);
 
   /* Soft, ambient, never a hard offset — a glass panel floats on blur and
      diffuse shadow, not a cast poster-style edge. */
-  --shadow-glass: 0 8px 30px rgba(0, 0, 0, 0.45), 0 1px 1px rgba(255, 255, 255, 0.04) inset;
-  --shadow-raised: 0 2px 10px rgba(0, 0, 0, 0.4);
-  --shadow-float: 0 20px 50px -12px rgba(0, 0, 0, 0.6);
+  --shadow-glass: 0 8px 30px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(255, 255, 255, 0.6) inset;
+  --shadow-raised: 0 2px 10px rgba(0, 0, 0, 0.08);
+  --shadow-float: 0 20px 50px -12px rgba(0, 0, 0, 0.18);
   /* A tinted glow under the mustard CTA — a neutral shadow under a
      saturated fill reads as dirt rather than depth. */
-  --shadow-brand: 0 8px 20px rgba(255, 197, 49, 0.28), 0 2px 6px rgba(0, 0, 0, 0.4);
-  --shadow-success: 0 8px 20px rgba(50, 215, 75, 0.2);
-  --shadow-chrome: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-brand: 0 8px 20px rgba(255, 197, 49, 0.35), 0 2px 6px rgba(255, 197, 49, 0.2);
+  --shadow-success: 0 8px 20px rgba(34, 165, 90, 0.2);
+  --shadow-chrome: 0 8px 24px rgba(0, 0, 0, 0.14);
 
   /* Flat content surfaces carry no shadow of their own -- separation from the
-     canvas comes from the colour step (#1C1C1E on #000), the Telegram way. */
+     canvas comes from the colour step (card vs. background), the Telegram
+     way, not a cast shadow. */
   --shadow-card: none;
-  --shadow-sheet: 0 -8px 40px rgba(0, 0, 0, 0.6);
+  --shadow-sheet: 0 -8px 40px rgba(0, 0, 0, 0.14);
   --shadow-fab: var(--shadow-brand);
   --shadow-popover: var(--shadow-float);
 
@@ -90,6 +95,59 @@
 
   /* Native form controls, keyboard accessory bars and scroll physics follow
      the scheme, not just our own colours. */
+  color-scheme: light;
+}
+
+/* ── Dark palette (the app's default -- see theme.ts) ──────────────────────
+   Same structure, printed at night: canvas drops to near-black, content
+   cards to a flat dark grey a step above it, and chrome flips from
+   translucent white to translucent near-black. The accent holds its hue --
+   it's the one colour with brand identity, and it needs to read the same in
+   either theme. */
+html.dark {
+  --background: #000000;
+  --foreground: #F2F2F4;
+  --card: #1C1C1E;
+  --card-foreground: #F2F2F4;
+  --primary: #FFC531;
+  --primary-foreground: #241A00;
+  --primary-hover: #FFCF52;
+  --secondary: rgba(255, 255, 255, 0.06);
+  --secondary-foreground: #F2F2F4;
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: #8E8E93;
+  --accent: rgba(255, 197, 49, 0.14);
+  --accent-foreground: #FFD873;
+  --destructive: #FF453A;
+  --destructive-foreground: #FFFFFF;
+  --success: #32D74B;
+  --success-foreground: #32D74B;
+  --warning: #FFC531;
+  --border: rgba(255, 255, 255, 0.09);
+  --input-background: rgba(255, 255, 255, 0.07);
+  --ring: #FFC531;
+
+  --edge: rgba(255, 255, 255, 0.12);
+  --hairline: rgba(255, 255, 255, 0.07);
+  --surface-raised: rgba(255, 255, 255, 0.07);
+  --surface-sunken: rgba(255, 255, 255, 0.04);
+
+  --chrome: rgba(40, 40, 44, 0.72);
+  --chrome-foreground: #F2F2F4;
+  --chrome-border: rgba(255, 255, 255, 0.1);
+
+  --shadow-glass: 0 8px 30px rgba(0, 0, 0, 0.45), 0 1px 1px rgba(255, 255, 255, 0.04) inset;
+  --shadow-raised: 0 2px 10px rgba(0, 0, 0, 0.4);
+  --shadow-float: 0 20px 50px -12px rgba(0, 0, 0, 0.6);
+  --shadow-brand: 0 8px 20px rgba(255, 197, 49, 0.28), 0 2px 6px rgba(0, 0, 0, 0.4);
+  --shadow-success: 0 8px 20px rgba(50, 215, 75, 0.2);
+  --shadow-chrome: 0 8px 24px rgba(0, 0, 0, 0.45);
+
+  --shadow-card: none;
+  --shadow-sheet: 0 -8px 40px rgba(0, 0, 0, 0.6);
+  --shadow-fab: var(--shadow-brand);
+  --shadow-popover: var(--shadow-float);
+
   color-scheme: dark;
 }
 
@@ -286,15 +344,20 @@ img {
 }
 
 /* ── Ambient backdrop ──────────────────────────────────────────────────────
-   A near-black canvas is the whole point of the chrome material -- the tab
-   bar and header pills only read as glass because there is a dark surface
-   with real content behind them to blur. This is just the faintest brand-
-   tinted glow from the top, not a texture: too much colour here would fight
-   the black canvas the floating chrome depends on. */
+   The canvas colour is the whole point of the chrome material -- the tab bar
+   and header pills only read as glass because there is opaque content behind
+   them to blur. This is just the faintest brand-tinted glow from the top, not
+   a texture: too much colour here would fight the canvas/chrome contrast the
+   floating pills depend on, in either palette. */
 .bg-decor {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  background:
+    radial-gradient(120% 40% at 50% -10%, rgba(255, 197, 49, 0.06) 0%, rgba(255, 197, 49, 0) 70%),
+    radial-gradient(70% 30% at 100% 0%, rgba(255, 197, 49, 0.03) 0%, rgba(255, 197, 49, 0) 65%);
+}
+html.dark .bg-decor {
   background:
     radial-gradient(120% 40% at 50% -10%, rgba(255, 197, 49, 0.1) 0%, rgba(255, 197, 49, 0) 70%),
     radial-gradient(70% 30% at 100% 0%, rgba(255, 197, 49, 0.05) 0%, rgba(255, 197, 49, 0) 65%);
@@ -432,6 +495,20 @@ img {
   to   { background-position: -80% 0; }
 }
 .skeleton {
+  background-color: rgba(0, 0, 0, 0.06);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    transparent 100%
+  );
+  background-size: 60% 100%;
+  background-repeat: no-repeat;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+/* Dark: base and sweep both flip to translucent white, so the same class
+   still works on the page and inside a card. */
+html.dark .skeleton {
   background-color: rgba(255, 255, 255, 0.06);
   background-image: linear-gradient(
     90deg,
@@ -439,7 +516,4 @@ img {
     rgba(255, 255, 255, 0.08) 50%,
     transparent 100%
   );
-  background-size: 60% 100%;
-  background-repeat: no-repeat;
-  animation: shimmer 1.5s ease-in-out infinite;
 }

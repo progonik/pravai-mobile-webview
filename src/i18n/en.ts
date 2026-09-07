@@ -46,6 +46,9 @@ export const en = {
   'profile.language': 'Language',
   'profile.logout': 'Log out',
   'profile.editInfo': 'Edit info',
+  'profile.mode': 'Appearance',
+  'profile.modeDark': 'Dark',
+  'profile.modeLight': 'Light',
 
   'field.fullName': 'Full name',
   'field.fullNamePlaceholder': 'Your full name',

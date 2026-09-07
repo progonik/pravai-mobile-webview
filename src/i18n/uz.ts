@@ -48,6 +48,9 @@ export const uz: Record<TranslationKey, string> = {
   'profile.language': 'Til',
   'profile.logout': 'Chiqish',
   'profile.editInfo': "Tahrirlash",
+  'profile.mode': 'Mavzu',
+  'profile.modeDark': "Qorong'i",
+  'profile.modeLight': 'Yorug\'',
 
   'field.fullName': "To'liq ism",
   'field.fullNamePlaceholder': "To'liq ismingiz",
