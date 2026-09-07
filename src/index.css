@@ -1,0 +1,553 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import 'tailwindcss';
+
+/* Dark mode is class-driven (`html.dark`, set by src/lib/theme.ts), not media-
+   driven: the user picks it in Profile, and inside the Flutter webview
+   prefers-color-scheme is not guaranteed to reflect the OS anyway. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Design tokens (Progress design system) ────────────────────────────────
+   Neutrals are a single cool ramp derived from #101828 rather than pure black,
+   so surfaces, hairlines and shadows all read as the same material. Anything
+   layered on the page picks its depth from the elevation ramp below instead of
+   inventing its own rgba(0,0,0,·). */
+:root {
+  --background: #F2F4F7;
+  --foreground: #101828;
+  --card: #FFFFFF;
+  --card-foreground: #101828;
+  --primary: #2563EB;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #1D4ED8;
+  --secondary: #EEF2FF;
+  --secondary-foreground: #1E40AF;
+  --muted: #F2F4F7;
+  --muted-foreground: #667085;
+  --accent: #DBEAFE;
+  --accent-foreground: #1E40AF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --success: #10B981;
+  --success-foreground: #059669;
+  --warning: #F59E0B;
+  --border: rgba(16, 24, 40, 0.07);
+  --input-background: #F2F4F7;
+  --ring: #93C5FD;
+
+  /* Secondary surfaces. `--surface-sunken` is the tint a card uses for a well
+     inside itself, where --background would be invisible against the card. */
+  --surface-raised: #FFFFFF;
+  --surface-sunken: #F7F8FA;
+  /* A divider *inside* a card — half the weight of --border, which is tuned for
+     separating a card from the page. */
+  --hairline: rgba(16, 24, 40, 0.05);
+
+  /* ── Elevation ramp ───────────────────────────────────────────────────────
+     Four steps, each a tight contact shadow plus a wider ambient one. Nothing
+     in the app should reach past `float`: on a phone there are only ever three
+     planes — page, card, and the sheet or menu above them. */
+  --elevation-flat: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --elevation-card: 0 1px 2px rgba(16, 24, 40, 0.05), 0 2px 8px rgba(16, 24, 40, 0.04);
+  --elevation-raised: 0 2px 4px rgba(16, 24, 40, 0.05), 0 8px 20px rgba(16, 24, 40, 0.07);
+  --elevation-float: 0 4px 8px rgba(16, 24, 40, 0.06), 0 16px 40px rgba(16, 24, 40, 0.12);
+  /* Brand-tinted glow for primary surfaces — a neutral shadow under a saturated
+     blue reads as dirt rather than depth. */
+  --elevation-brand: 0 6px 16px rgba(37, 99, 235, 0.24), 0 2px 4px rgba(37, 99, 235, 0.16);
+  /* Same idea for the one green CTA (claiming a bonus) — success-tinted glow. */
+  --elevation-success: 0 6px 16px rgba(16, 185, 129, 0.24), 0 2px 4px rgba(16, 185, 129, 0.16);
+
+  --shadow-card: var(--elevation-card);
+  --shadow-sheet: 0 -8px 40px rgba(16, 24, 40, 0.18);
+  --shadow-fab: 0 8px 24px rgba(37, 99, 235, 0.4);
+  --shadow-popover: var(--elevation-float);
+
+  /* Status-bar inset, read by every header instead of `env()` directly.
+     `env()` is what makes one value correct on every device — the OS reports
+     20pt on a non-notch iPhone, ~47pt with a notch, ~59pt for a Dynamic Island
+     and whatever a given Android reports for its status bar. A fixed padding
+     would be too tight on some of those and too loose on others.
+
+     Floored, because some webview hosts report 0 even where there is a bar to
+     clear — the same reason the bottom inset is floored. Set to 47px against an
+     iPhone 11, whose real inset is 44pt: the extra 3px is breathing room under
+     the bar. Note that max() only ever raises the value, so every device whose
+     real inset is smaller — a non-notch iPhone at 20pt, a typical Android at
+     24dp — is padded to 47 too. If that reads as too much space on those, the
+     fix is to lower this back toward the true minimum and put the breathing
+     room in the additive constant below, which applies evenly everywhere.
+
+     This used to be zeroed inside the shell, which laid the webview out below
+     the status bar itself; the shell is edge-to-edge now, so the inset is ours
+     to reserve again. */
+  --safe-top: max(env(safe-area-inset-top), 47px);
+
+  /* Native form controls, keyboard accessory bars and scroll physics follow
+     the scheme, not just our own colours. */
+  color-scheme: light;
+}
+
+/* ── Dark palette ──────────────────────────────────────────────────────────
+   Neutral charcoal, not navy: a night theme for a shop reads as material —
+   near-black page, graphite cards — with colour reserved for actions and
+   status. The blue lives in buttons and links only; the moment it leaks into
+   backgrounds and glows the whole app starts looking like a gaming rig.
+   Borders do the separating (shadows barely register on dark, so they only
+   ground, never define), and the brand blue steps up one notch to #3B82F6 to
+   keep its contrast against the darker ground. */
+html.dark {
+  --background: #0E1013;
+  --foreground: #E9EAEC;
+  --card: #17191D;
+  --card-foreground: #E9EAEC;
+  --primary: #3B82F6;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #2E6FE0;
+  --secondary: #1E2126;
+  --secondary-foreground: #9FB9EF;
+  --muted: #1D2024;
+  --muted-foreground: #999EA6;
+  --accent: #1C2027;
+  --accent-foreground: #9FB9EF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --success: #10B981;
+  --success-foreground: #34D399;
+  --warning: #FBBF24;
+  --border: rgba(255, 255, 255, 0.08);
+  --input-background: #1D2024;
+  --ring: #2F4E8F;
+
+  --surface-raised: #1E2126;
+  --surface-sunken: #121417;
+  --hairline: rgba(255, 255, 255, 0.05);
+
+  /* Shadows survive as grounding, not definition: alpha climbs because a
+     light-mode shadow is invisible on near-black, but the card edge above is
+     what actually draws the shape. */
+  --elevation-flat: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --elevation-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.28);
+  --elevation-raised: 0 2px 4px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.45);
+  --elevation-float: 0 4px 8px rgba(0, 0, 0, 0.4), 0 16px 40px rgba(0, 0, 0, 0.6);
+  /* Tinted glows dialled well down: on charcoal a saturated halo is neon. */
+  --elevation-brand: 0 6px 16px rgba(37, 99, 235, 0.18), 0 2px 4px rgba(0, 0, 0, 0.35);
+  --elevation-success: 0 6px 16px rgba(16, 185, 129, 0.14), 0 2px 4px rgba(0, 0, 0, 0.35);
+
+  --shadow-sheet: 0 -8px 40px rgba(0, 0, 0, 0.6);
+  --shadow-fab: 0 8px 24px rgba(37, 99, 235, 0.3);
+
+  color-scheme: dark;
+}
+
+/* ── Tailwind theme tokens ─────────────────────────────────────────────── */
+@theme inline {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-border: var(--border);
+  --color-hairline: var(--hairline);
+  --color-input-background: var(--input-background);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-ring: var(--ring);
+
+  /* `shadow-card` / `shadow-raised` / `shadow-float` / `shadow-brand`. Named
+     for the plane a thing sits on, not for a size — a card is a card whether it
+     is 40px or full-bleed. */
+  --shadow-card: var(--elevation-card);
+  --shadow-raised: var(--elevation-raised);
+  --shadow-float: var(--elevation-float);
+  --shadow-brand: var(--elevation-brand);
+  --shadow-success: var(--elevation-success);
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root { width: 100%; height: 100%; margin: 0; }
+
+/* The document itself never scrolls — every scrollable region lives inside the
+   app shell — so lock it down. Left open, iOS rubber-bands the whole page on
+   any swipe past the end of a list, dragging the UI away from the screen edges
+   to reveal bare background. That bounce is the clearest tell that this is a
+   webview rather than a native screen. */
+html, body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--foreground);
+  background: var(--background);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Native touch rules ────────────────────────────────────────────────────
+   Long-press must not select text or raise the iOS copy callout, and a double
+   tap must not zoom — each of those instantly reads as "web page", not "app".
+   Text entry is the one place selection belongs. */
+html {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+input, textarea, [contenteditable] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+img {
+  -webkit-user-drag: none;
+}
+
+/* Keep a list's overscroll to itself once it hits its end, instead of handing
+   the gesture up to the document. `contain` rather than `none` on purpose: the
+   inner bounce is what native scroll views do, so it is worth keeping — it is
+   only the page-level bounce above that gives the game away. */
+.overflow-y-auto, .overflow-auto { overscroll-behavior: contain; }
+
+/* Horizontal rails (the category strip) must not swallow a vertical drag: a
+   finger that lands on one and moves down should scroll the page, not stall.
+
+   `overflow-y: hidden` is the load-bearing line. Setting only `overflow-x`
+   leaves the other axis `visible`, which CSS then computes to `auto` — so the
+   rail became a vertical scroller too and ate the gesture, even though its
+   content never overflows vertically. `pan-x` and the x-only overscroll
+   containment then keep the vertical chain pointed at the page. */
+.overflow-x-auto {
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+}
+
+/* A page header that runs under the status bar. The shell used to paint a
+   separate strip of `--card` for the inset, which showed up as a white band
+   above pages whose own surface is not white (profile, home) — the header
+   carrying its own inset is one continuous surface instead. */
+.top-inset { padding-top: calc(var(--safe-top) + 16px); }
+
+/* Full height of the *visible* viewport, so the on-screen keyboard shrinks the
+   app instead of covering it. The variable is kept up to date by
+   installViewportHeight() in src/lib/viewport.ts; the fallback only applies for
+   the first paint, or if that never runs. */
+.h-app { height: var(--app-height, 100svh); }
+
+/* Hide scrollbars inside the webview */
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
+
+/* ── Interaction ───────────────────────────────────────────────────────────
+   One press response for the whole app. Anything tappable that is bigger than
+   an icon gets `.press`: it sinks slightly under the finger and springs back on
+   the same curve the sheets use, which is what separates a native-feeling tap
+   from a web one. Icon-sized targets are left alone — scaling a 20px glyph
+   reads as a glitch rather than a press. */
+.press {
+  transition: transform 0.18s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.18s ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.press:active { transform: scale(0.97); }
+/* Full-bleed rows have no visible edges to shrink, so they dim instead. */
+.press-row { transition: background-color 0.16s ease; }
+.press-row:active { background-color: var(--surface-sunken); }
+
+/* Figures the eye compares down a column — balances, points, prices. Tabular
+   digits stop the number jittering as it counts up or refetches, and the
+   negative tracking keeps a large number from looking loose. */
+.numeric {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ── Screen transitions ────────────────────────────────────────────────────
+   Pure CSS keyframes over transform/opacity: the compositor drives the entry,
+   so it stays smooth even while the main thread is busy mounting the new
+   page. Tabs cross-fade with a small rise; pushed sub-screens slide in from
+   the right, the way a native stack navigator presents them. AppShell keys
+   the wrapper by pathname, so every navigation replays the animation. */
+.screen-tab {
+  animation: screenTabIn 0.22s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+.screen-stack {
+  animation: screenStackIn 0.28s cubic-bezier(0.32, 0.72, 0.25, 1) both;
+}
+@keyframes screenTabIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes screenStackIn {
+  from { opacity: 0; transform: translateX(48px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Ambient backdrop ──────────────────────────────────────────────────────
+   A fixed decorative layer under the app: a faint dot grid that dissolves
+   toward the bottom, plus a soft brand-blue light falling from the top. Pages
+   with an opaque background cover it; home leaves its background transparent
+   so the surface shows, and it always peeks around the floating dock. */
+.bg-decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Three wide colour fields — a mesh gradient, not a single vignette. The
+     blues have to carry real saturation: at low alpha over a neutral grey
+     they read as a printing fault rather than as light. */
+  background:
+    radial-gradient(125% 46% at 50% -6%, #C7D8FF 0%, rgba(199, 216, 255, 0) 68%),
+    radial-gradient(78% 34% at 106% 12%, #BBD0FF 0%, rgba(187, 208, 255, 0) 64%),
+    radial-gradient(74% 32% at -10% 34%, #D5D8FF 0%, rgba(213, 216, 255, 0) 62%);
+}
+/* The dot grid rides on top of the colour, dissolving toward the bottom so
+   the lower half of a long feed stays calm. */
+.bg-decor::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(16, 24, 40, 0.11) 1.2px, transparent 1.2px);
+  background-size: 20px 20px;
+  mask-image: linear-gradient(180deg, #000 0%, #000 46%, transparent 92%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 46%, transparent 92%);
+}
+
+/* Dark: no coloured pools — indigo ambience is what tips a dark theme from
+   "shop at night" into "gaming rig". Just a whisper of neutral light from
+   the top so the page is not a flat void, and a fainter dot grid. */
+html.dark .bg-decor {
+  background:
+    radial-gradient(125% 46% at 50% -6%, #1A1D22 0%, rgba(26, 29, 34, 0) 68%);
+}
+html.dark .bg-decor::after {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1.2px, transparent 1.2px);
+}
+
+/* ── Yandex Maps dark theme ────────────────────────────────────────────────
+   API 2.1 ships no dark style (that is a v3 feature), so dark mode inverts
+   the raster tile pane instead: invert flips light ground to dark, the
+   hue-rotate turns the resulting orange water back to blue, and the saturate/
+   brightness pull keeps roads from glowing. Scoped to the ground pane only —
+   pins, the position marker and our own controls render in other panes and
+   keep their true colours. Prefix selector because Yandex stamps its build
+   number into every class name (ymaps-2-1-79-ground-pane). */
+html.dark [class*='-ground-pane'] {
+  filter: invert(1) hue-rotate(180deg) saturate(0.65) brightness(0.85) contrast(0.92);
+}
+/* The pane behind the tiles flashes white while they load. */
+html.dark [class*='ymaps'][class*='-map'] {
+  background: var(--background);
+}
+
+/* ── Home entrance ─────────────────────────────────────────────────────────
+   The one screen that gets a staged arrival: sections cascade in top to
+   bottom, each a beat behind the last, so opening the app reads as a curtain
+   rising rather than a page flashing on. Compositor-driven, ~0.5s total. */
+@keyframes enterUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: none; }
+}
+.enter-1, .enter-2, .enter-3, .enter-4 {
+  animation: enterUp 0.5s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+/* Held invisible while the welcome screen is up: the cascade would otherwise
+   play out of sight and the home screen would be fully assembled by the time
+   the welcome dissolves. */
+.enter-hold { opacity: 0; }
+
+.enter-1 { animation-delay: 0.02s; }
+.enter-2 { animation-delay: 0.1s; }
+.enter-3 { animation-delay: 0.18s; }
+.enter-4 { animation-delay: 0.26s; }
+
+/* ── Welcome screen ────────────────────────────────────────────────────────
+   Shown for a couple of seconds after signing in, then dissolved. It lifts
+   slightly as it fades so the app underneath reads as arriving, not as being
+   revealed by something being switched off. */
+@keyframes welcomeOut {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(1.04); }
+}
+.welcome-out {
+  animation: welcomeOut 0.42s ease-in both;
+  pointer-events: none;
+}
+
+/* Rings pushing out of the confirmation tick. */
+@keyframes welcomeRing {
+  from { opacity: 0.75; transform: scale(0.9); }
+  to   { opacity: 0; transform: scale(1.85); }
+}
+.welcome-ring {
+  animation: welcomeRing 1.6s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-ring { animation: none; }
+}
+
+/* ── Tabbar behavior ───────────────────────────────────────────────────────
+   The dock is a floating glass island on the app's own light palette; the
+   sliding highlight is ONE absolute element moving via transform/width — the
+   compositor animates it, so switching stays fluid even while the next page
+   mounts. Items squash a little further than `.press` does: a tab is hit
+   hundreds of times a day and the response has to be unmistakable. */
+.tab-pill {
+  position: absolute;
+  left: 0;
+  border-radius: 16px;
+  background: rgba(37, 99, 235, 0.09);
+  pointer-events: none;
+  will-change: transform;
+  transition:
+    transform 0.32s cubic-bezier(0.3, 0.72, 0.2, 1),
+    width 0.32s cubic-bezier(0.3, 0.72, 0.2, 1);
+}
+/* Dark: a touch more alpha so the pill still reads on graphite, but kept
+   quiet — the active tab is marked, not lit up. */
+html.dark .tab-pill {
+  background: rgba(59, 130, 246, 0.13);
+}
+.press-tab {
+  transition: transform 0.12s ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.press-tab:active { transform: scale(0.9); }
+/* The scan puck gets a springier squash with a hint of rotation — it is the
+   app's one playful control. */
+.press-fab {
+  transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.press-fab:active { transform: scale(0.88) rotate(8deg); }
+
+/* ── Pull-to-refresh indicator ─────────────────────────────────────────────
+   A small floating disc that rides the drag; the content itself never moves,
+   so the gesture cannot fight the scroll. */
+.ptr {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  z-index: 30;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--card);
+  box-shadow: var(--elevation-raised);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-tab, .screen-stack { animation: none; }
+  .enter-1, .enter-2, .enter-3, .enter-4 { animation: none; }
+  .tab-pill, .press, .press-tab, .press-fab { transition: none; }
+}
+
+/* ── Animations ────────────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fadeInUp 0.38s ease-out both; }
+
+@keyframes scanline {
+  0%   { top: 4%;  opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { top: 96%; opacity: 0; }
+}
+.animate-scanline { animation: scanline 2.2s ease-in-out infinite; }
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.7); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-pop-in { animation: popIn 0.3s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+
+/* ── Bottom sheets ─────────────────────────────────────────────────────────
+   The panel travels its own full height rather than a fixed offset, so tall
+   and short sheets take the same time to arrive. The curve leaves fast and
+   settles slowly without overshooting — the iOS sheet feel. */
+@keyframes sheetIn {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.animate-sheet-in { animation: sheetIn 0.34s cubic-bezier(0.32, 0.72, 0, 1) both; }
+
+/* Backdrop fades on its own, slightly quicker, so the dimming is established
+   by the time the panel lands. */
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-backdrop-in { animation: backdropIn 0.26s ease-out both; }
+
+/* ── Toasts ────────────────────────────────────────────────────────────── */
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(-14px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-toast-in { animation: toastIn 0.24s cubic-bezier(0.32, 0.72, 0, 1) both; }
+
+/* ── Skeletons ─────────────────────────────────────────────────────────────
+   A sweep rather than a pulse: opacity blinking on a grid of placeholders makes
+   the whole screen throb, while a highlight travelling across them reads as one
+   surface loading. The tint is a translucent neutral so the same class works on
+   the page and inside a card. */
+@keyframes shimmer {
+  from { background-position: 180% 0; }
+  to   { background-position: -80% 0; }
+}
+.skeleton {
+  background-color: rgba(16, 24, 40, 0.055);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    transparent 100%
+  );
+  background-size: 60% 100%;
+  background-repeat: no-repeat;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+/* Dark: base and sweep both flip to translucent white, so the same class
+   still works on the page and inside a card. */
+html.dark .skeleton {
+  background-color: rgba(255, 255, 255, 0.06);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+}
+
+/* Tap-to-focus ring on the scanner preview. */
+@keyframes focusRing {
+  0%   { opacity: 0; transform: scale(1.5); }
+  25%  { opacity: 1; transform: scale(1); }
+  75%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.94); }
+}
+.animate-focus-ring { animation: focusRing 0.85s ease-out both; }

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="theme-color" content="#F4F5F7" />
+    <title>PravAI Mobile</title>
+    <!-- Theme before the bundle: main.tsx applies the class too, but only
+         after the JS downloads — on a cold start in dark mode that is a
+         white flash. This mirrors src/lib/theme.ts and must stay in sync
+         with its storage key and fallback. -->
+    <script>
+      try {
+        if (localStorage.getItem('pravai-theme') === 'dark')
+          document.documentElement.classList.add('dark')
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
