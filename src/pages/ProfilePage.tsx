@@ -48,7 +48,7 @@ export function ProfilePage() {
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[16px] font-bold text-foreground truncate">
+          <p className="font-display text-[16px] font-bold text-foreground truncate">
             {profile?.fullName || t('profile.noName')}
           </p>
           <p className="text-[13px] text-muted-foreground numeric">{profile?.phone}</p>

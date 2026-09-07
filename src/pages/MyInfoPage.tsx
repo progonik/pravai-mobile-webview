@@ -64,7 +64,7 @@ export function MyInfoPage() {
 
         <button
           onClick={() => setEditing(true)}
-          className="press w-full mt-5 py-3.5 rounded-2xl bg-primary text-white font-semibold text-[14px]"
+          className="press-pop w-full mt-5 py-3.5 rounded-2xl bg-primary text-primary-foreground font-bold uppercase tracking-wide text-[14px] border-2 border-edge shadow-pop"
         >
           {t('profile.editInfo')}
         </button>

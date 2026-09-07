@@ -15,7 +15,7 @@ export function HomePage() {
     <div className="flex-1 overflow-y-auto flex flex-col top-inset px-4 pb-6">
       <div className="pt-2 pb-4">
         <p className="text-[13px] text-muted-foreground">{t('home.greeting')}</p>
-        <p className="text-[20px] font-bold text-foreground">
+        <p className="font-display text-[20px] font-bold text-foreground">
           {session?.user.fullName ?? session?.user.phone}
         </p>
       </div>

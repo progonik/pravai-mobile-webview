@@ -60,11 +60,8 @@ export function UpdateProfilePage({ onDone }: { onDone: () => void }) {
               )}
             </span>
             {!uploading && (
-              <span
-                className="absolute -bottom-0.5 -right-0.5 w-8 h-8 rounded-full bg-primary flex items-center justify-center border-[3px] border-background"
-                style={{ boxShadow: 'var(--elevation-brand)' }}
-              >
-                <Camera size={14} className="text-white" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-8 h-8 rounded-full bg-primary flex items-center justify-center border-2 border-edge shadow-pop-sm">
+                <Camera size={14} className="text-primary-foreground" />
               </span>
             )}
           </button>
@@ -92,7 +89,7 @@ export function UpdateProfilePage({ onDone }: { onDone: () => void }) {
         <button
           onClick={handleSave}
           disabled={!name.trim() || isSubmitting}
-          className="press w-full bg-primary text-white rounded-2xl py-4 text-[15px] font-semibold shadow-brand disabled:opacity-40 disabled:shadow-none"
+          className="press-pop w-full bg-primary text-primary-foreground rounded-2xl py-4 text-[15px] font-bold uppercase tracking-wide border-2 border-edge shadow-brand disabled:opacity-40 disabled:shadow-none"
         >
           {isSubmitting ? t('common.saving') : t('common.save')}
         </button>

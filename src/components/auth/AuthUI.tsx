@@ -57,27 +57,24 @@ export function LanguageSelector() {
 }
 
 /**
- * The wordmark. The tile carries the brand gradient and its own glow, the same
- * surface the balance card and the promo banners are made of — so the first
- * screen of the app already looks like the app.
+ * The wordmark. A dark tile with a hard pop shadow and a mustard-stroke car
+ * icon — design/pravai.html's `.logo-mark` -- rather than a soft gradient
+ * glow, so the first screen of the app already looks like the poster the
+ * rest of it is printed on.
  */
 export function LogoMark() {
   return (
     <div className="flex items-center gap-2.5">
-      <div
-        className="w-10 h-10 rounded-2xl flex items-center justify-center"
-        style={{
-          background: 'linear-gradient(135deg, #3B7BFF 0%, #2563EB 48%, #1B3FA8 100%)',
-          boxShadow: 'var(--elevation-brand)',
-        }}
-      >
-        <svg width="21" height="21" viewBox="0 0 22 22" fill="none">
-          <path d="M11 2L4 6.5V15.5L11 20L18 15.5V6.5L11 2Z" fill="white" fillOpacity="0.2" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
-          <path d="M11 7L8 9.5V14.5L11 17L14 14.5V9.5L11 7Z" fill="white" />
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[var(--frame)] border-2 border-edge shadow-pop-sm">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 17h1.5l1.2-4.8A2 2 0 0 1 7.6 10.6h8.8a2 2 0 0 1 1.9 1.4L19.5 17H21" />
+          <circle cx="7.5" cy="17.5" r="1.7" />
+          <circle cx="16.5" cy="17.5" r="1.7" />
+          <path d="M5 13.5h14" />
         </svg>
       </div>
       <div>
-        <div className="text-[15px] font-bold text-foreground tracking-tight leading-none">PravAI</div>
+        <div className="font-display text-[15px] font-bold text-foreground tracking-tight leading-none">PravAI</div>
         <div className="text-[9px] font-semibold text-muted-foreground tracking-[0.14em] uppercase leading-none mt-1">Haydovchilik</div>
       </div>
     </div>

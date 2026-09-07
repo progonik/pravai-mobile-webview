@@ -1,4 +1,3 @@
-import { useLayoutEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Home, ListChecks, MessageCircle, User } from 'lucide-react'
 import { useT } from '../context/LocaleContext'
@@ -13,54 +12,15 @@ const tabs = [
 ] as const
 
 /**
- * Floating dock. Held off the screen edges so it reads as an island above
- * the app rather than a bar glued to the bottom -- with the sliding
- * highlight, it is the one piece of chrome that is visibly *this* app's. It
- * stays on the app's own light palette so the bottom of every screen ends
- * in the same material the cards are made of.
+ * Bottom nav, matching design/pravai.html's `.tab` / `.tab.active`: each
+ * button is its own surface, and the active one flips to a solid accent
+ * block with the poster's edge border and a small pop shadow -- a state
+ * readable from a single frame, not a highlight sliding in from off-screen.
  */
 export function AppTabbar() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const t = useT()
-
-  const rowRef = useRef<HTMLDivElement>(null)
-  // The sliding highlight under the active tab: one absolute element moved by
-  // transform/width transitions (see .tab-pill in index.css), measured from
-  // the active button rather than computed from indices, so it survives any
-  // label length in any language.
-  const [pill, setPill] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
-  // The first placement happens on mount and must not slide in from x=0.
-  const [animated, setAnimated] = useState(false)
-
-  useLayoutEffect(() => {
-    const row = rowRef.current
-    if (!row) return
-
-    const measure = () => {
-      const btn = row.querySelector<HTMLElement>('[aria-current="page"]')
-      if (!btn) {
-        setPill(null)
-        return
-      }
-      const rowBox = row.getBoundingClientRect()
-      const box = btn.getBoundingClientRect()
-      setPill({
-        x: box.left - rowBox.left + 4,
-        y: box.top - rowBox.top,
-        w: box.width - 8,
-        h: box.height,
-      })
-    }
-
-    measure()
-    const raf = requestAnimationFrame(() => setAnimated(true))
-    window.addEventListener('resize', measure)
-    return () => {
-      cancelAnimationFrame(raf)
-      window.removeEventListener('resize', measure)
-    }
-  }, [pathname])
 
   const openTab = (path: string, active: boolean) => {
     // Re-tapping the active tab scrolls its page back to the top — the
@@ -81,24 +41,7 @@ export function AppTabbar() {
       // The dock hovers above the home indicator rather than merging with it.
       style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 12px)' }}
     >
-      <div
-        ref={rowRef}
-        className="relative flex items-center px-2 py-1.5 rounded-[26px] bg-card border border-border shadow-float"
-      >
-        {pill && (
-          <span
-            className="tab-pill"
-            aria-hidden="true"
-            style={{
-              transform: `translateX(${pill.x}px)`,
-              top: pill.y,
-              width: pill.w,
-              height: pill.h,
-              transition: animated ? undefined : 'none',
-            }}
-          />
-        )}
-
+      <div className="flex items-center gap-1.5 px-2 py-2 rounded-[26px] bg-card border-2 border-edge">
         {tabs.map(({ path, labelKey, Icon }) => {
           const isActive = pathname === path || (pathname === '/' && path === '/home')
 
@@ -107,18 +50,14 @@ export function AppTabbar() {
               key={path}
               onClick={() => openTab(path, isActive)}
               aria-current={isActive ? 'page' : undefined}
-              className="press-tab relative flex-1 h-[52px] flex flex-col items-center justify-center gap-1 rounded-2xl"
+              className={`press-tab flex-1 h-[52px] flex flex-col items-center justify-center gap-1 rounded-2xl border-2 transition-colors duration-150 ${
+                isActive
+                  ? 'bg-primary border-edge shadow-pop-sm text-primary-foreground'
+                  : 'border-transparent text-muted-foreground'
+              }`}
             >
-              <div className={`relative transition-colors duration-200 ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
-                <Icon size={22} strokeWidth={isActive ? 2.3 : 1.8} />
-              </div>
-              {/* The label is what makes a tab bar readable at a glance; the
-                  colour change carries the selection so the row never reflows. */}
-              <span
-                className={`text-[10px] leading-none font-semibold transition-colors duration-200 ${
-                  isActive ? 'text-primary' : 'text-muted-foreground'
-                }`}
-              >
+              <Icon size={21} strokeWidth={isActive ? 2.4 : 1.8} />
+              <span className="text-[10px] leading-none font-extrabold uppercase tracking-wide">
                 {t(labelKey)}
               </span>
             </button>

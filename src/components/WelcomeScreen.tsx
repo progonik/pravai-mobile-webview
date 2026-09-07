@@ -40,41 +40,37 @@ export function WelcomeScreen() {
 
   return (
     <div
-      className={`absolute inset-0 z-[100] flex flex-col items-center justify-center px-8 text-white ${
+      className={`absolute inset-0 z-[100] flex flex-col items-center justify-center px-8 bg-primary text-primary-foreground ${
         leaving ? 'welcome-out' : ''
       }`}
-      style={{ background: 'linear-gradient(135deg, #3B7BFF 0%, #2563EB 48%, #1B3FA8 100%)' }}
       role="status"
     >
-      {/* The same printed texture the balance card carries. */}
+      {/* The same printed dot-grid texture the rest of the app is on, just
+          in ink-on-accent instead of ink-on-paper. */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage: 'radial-gradient(rgba(255,255,255,0.13) 1px, transparent 1px)',
-          backgroundSize: '20px 20px',
+          backgroundImage: 'radial-gradient(rgba(24,22,17,0.16) 1.4px, transparent 1.4px)',
+          backgroundSize: '22px 22px',
         }}
-      />
-      <div
-        className="absolute -top-24 -right-16 w-72 h-72 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 70%)' }}
       />
 
       <div className="relative flex flex-col items-center">
         {/* Two rings expanding out of the tick, so the confirmation reads as an
             event rather than a static icon. */}
         <div className="relative w-24 h-24 flex items-center justify-center">
-          <span className="welcome-ring absolute inset-0 rounded-full border-2 border-white/40" />
-          <span className="welcome-ring absolute inset-0 rounded-full border-2 border-white/25" style={{ animationDelay: '0.35s' }} />
-          <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center animate-pop-in">
+          <span className="welcome-ring absolute inset-0 rounded-full border-2 border-[var(--frame)]/35" />
+          <span className="welcome-ring absolute inset-0 rounded-full border-2 border-[var(--frame)]/20" style={{ animationDelay: '0.35s' }} />
+          <div className="w-24 h-24 rounded-full bg-[var(--frame)] border-2 border-edge shadow-pop flex items-center justify-center animate-pop-in">
             <Check size={46} className="text-primary" strokeWidth={3} />
           </div>
         </div>
 
-        <p className="text-[26px] font-bold text-center leading-tight mt-7 animate-fade-in-up">
+        <p className="font-display text-[24px] font-bold text-center leading-tight mt-7 animate-fade-in-up">
           {firstName ? t('welcome.titleNamed', { name: firstName }) : t('welcome.title')}
         </p>
         <p
-          className="text-[14px] text-white/70 text-center leading-relaxed mt-2.5 animate-fade-in-up"
+          className="text-[14px] text-primary-foreground/70 text-center leading-relaxed mt-2.5 animate-fade-in-up"
           style={{ animationDelay: '0.12s' }}
         >
           {t('welcome.body')}

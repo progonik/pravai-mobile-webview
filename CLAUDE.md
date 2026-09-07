@@ -5,10 +5,14 @@ Meant to run inside a native iOS/Android WebView shell; `src/lib/nativeBridge.ts
 the boundary to it (no shell exists yet -- see "Status" below).
 
 This project was scaffolded from `progress-master-app` (a sibling product's
-mobile webview, same architecture) by stripping its e-commerce domain and
-rewiring auth to PravAI's own backend. Most of the design system and app
-mechanics below are carried over unchanged from that project on purpose --
-they're solved interaction problems, not decisions specific to Progress.
+mobile webview, same architecture) by stripping its e-commerce domain,
+rewiring auth to PravAI's own backend, and re-skinning the whole design layer
+to PravAI's own look (see `design/pravai.html` in the main `pravai` repo) —
+Progress's soft blue/gradient palette is gone. The **app mechanics** (press
+states, screen transitions, scroll memory, the tabbar's measurement/render
+split, safe-area handling) are carried over unchanged on purpose: they're
+solved interaction problems, not decisions specific to either product's
+branding.
 
 ## Status (read this before adding a screen)
 
@@ -32,19 +36,39 @@ mobile-facing endpoint on the backend (`pravai` repo) instead.
 
 ## Design primitives
 
-Everything below is defined once in `src/index.css`. Reach for the token, not a
-literal — a hand-written `rgba(0,0,0,0.06)` or `shadow-[0_2px_8px…]` is how the
-surfaces drift apart from each other.
+Everything below is defined once in `src/index.css`, ported from
+`design/pravai.html` in the main `pravai` repo (that file is the source of
+truth for the palette — keep the two in sync). It's a warm-paper, hard-edge
+poster look, not a soft corporate one: thick near-black borders, a flat
+mustard accent, and offset "pop" shadows with zero blur (a shape drawn by an
+edge, not a glow) — the opposite of `progress-master-app`'s ambient
+drop-shadow ramp, even though the token *names* below are unchanged from it.
 
-**Elevation.** Four planes, named for what sits on them, not for a size:
-`shadow-card` (a card on the page), `shadow-raised` (a header once content has
-scrolled under it, a popover), `shadow-float` (sheets, menus), `shadow-brand`
-(anything filled with `--primary` — a neutral shadow under saturated blue reads
-as dirt).
+**Fonts.** `font-display` (Unbounded, bold/uppercase, headings and primary
+buttons) and the default body font (Manrope). Both embedded as base64
+`@font-face` data URIs directly in `index.css`, matching how
+`design/pravai.html` ships them — no external font request, but it does mean
+the CSS bundle is ~100KB heavier than a typical app; worth revisiting (a real
+font file + `<link rel="preload">`) if that ever matters for load time.
 
-**Surfaces.** `bg-background` (the page) → `bg-card` (a card) →
-`bg-surface-sunken` (a well *inside* a card). Divider between cards is
-`border-border`; a divider *within* one is `border-hairline`.
+**Elevation.** `shadow-pop` / `shadow-pop-sm` are the signature move: a hard
+4px/3px offset in `--edge`, no blur. Reserved for things that should read as
+sitting *above* the page stock — the primary CTA, the active tab, the OTP
+digit's focus state — and paired with `.press-pop` (or `.press-pop-sm`),
+which collapses the shadow and translates the element by the same offset on
+press, so it reads as being pushed flat rather than merely dimming. Ordinary
+cards are flat (`shadow-card` resolves to `none`) with just a `border-border`
+— see `.card` in `design/pravai.html`. `shadow-raised`/`shadow-float` cover
+headers-once-scrolled and sheets/popovers respectively, both softer/ambient
+(`shadow-ambient`) since those need real separation from the page, not a
+poster edge.
+
+**Surfaces.** `bg-background` (the paper) → `bg-card` (a surface on it) →
+`bg-surface-sunken` (a well *inside* a card). Divider between cards is the
+quiet `border-border` (`--line`); a divider *within* one is `border-hairline`.
+`border-edge` is the loud one — thick, always near-black-on-paper /
+cream-on-ink regardless of theme — for anything meant to look cut out of
+card stock: buttons, the tabbar, page headers.
 
 **Press.** Every tappable thing bigger than an icon gets `.press` — it sinks
 under the finger on the same curve the sheets use. Full-bleed list rows use
@@ -70,10 +94,12 @@ up out of a blur.
 routes enter with `.screen-tab` (fade + rise), everything else with
 `.screen-stack` (slide from the right, like a native push).
 
-**Tab bar.** A floating glass island (`bg-card` rounded dock held off the
-screen edges) with a sliding pill highlight measured from the active button.
-Tab switches `navigate(path, { replace: true })` — "back" never pages through
-tabs. Re-tapping the active tab smooth-scrolls its page to the top.
+**Tab bar.** A dock (`bg-card`, `border-edge`) held off the screen edges; the
+active tab flips to a solid `bg-primary` block with its own `border-edge` and
+`shadow-pop-sm` (`design/pravai.html`'s `.tab.active`) rather than a
+highlight sliding in from off-screen. Tab switches
+`navigate(path, { replace: true })` — "back" never pages through tabs.
+Re-tapping the active tab smooth-scrolls its page to the top.
 
 **Welcome screen.** `src/components/WelcomeScreen.tsx`, held over the app for
 ~2.2s after a fresh sign-in, driven by `justSignedIn` in `AuthContext` — which
