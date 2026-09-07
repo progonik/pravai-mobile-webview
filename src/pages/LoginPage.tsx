@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, Check, ChevronLeft, Phone, ShieldCheck, UserPlus } from 'lucide-react'
+import { ArrowRight, Calendar, Check, ChevronLeft, Phone, ShieldCheck, User, UserPlus } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { LanguageSelector, LogoMark } from '../components/auth/AuthUI'
 import { useT } from '../context/LocaleContext'
@@ -267,13 +267,24 @@ function OtpStep({ phone, onVerify, onBack, onResend }: {
 }
 
 // ─── Step 3: register (only for a phone verifyOtp didn't recognize) ───────────
+// Bounds mirror the backend's own check (identity.ValidateDateOfBirth):
+// not in the future, not more than 120 years ago. Enforced here too via the
+// date input's min/max so the picker itself won't offer an invalid value.
+const DOB_MAX = new Date().toISOString().slice(0, 10)
+const DOB_MIN = new Date(Date.now() - 120 * 365.25 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+
 function RegisterStep({ phone, onRegister, onBack }: {
   phone: string
-  onRegister: () => void
+  onRegister: (fullName: string, dateOfBirth: string) => void
   onBack: () => void
 }) {
-  const { isSubmitting, authError } = useAuth()
+  const [fullName, setFullName] = useState('')
+  const [dateOfBirth, setDateOfBirth] = useState('')
+  const { isSubmitting, authError, clearAuthError } = useAuth()
   const t = useT()
+  const valid = fullName.trim().length > 0 && dateOfBirth.length > 0
+
+  const submit = () => { if (valid) onRegister(fullName.trim(), dateOfBirth) }
 
   return (
     <div className="flex flex-col h-full">
@@ -292,14 +303,43 @@ function RegisterStep({ phone, onRegister, onBack }: {
           {t('auth.registerIntro')}<span className="font-semibold text-foreground numeric">{formatE164(phone)}</span>
         </p>
 
+        <div className="mt-6">
+          <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t('field.fullName')}</label>
+          <div className="mt-2 flex items-center gap-2.5 rounded-2xl bg-card px-3.5 py-3.5 border border-border shadow-card focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15 transition-all">
+            <User size={17} className="text-muted-foreground shrink-0" />
+            <input
+              type="text"
+              placeholder={t('field.fullNamePlaceholder')}
+              value={fullName}
+              onChange={(e) => { setFullName(e.target.value); if (authError) clearAuthError() }}
+              className="flex-1 min-w-0 bg-transparent text-[15px] font-medium text-foreground placeholder:text-muted-foreground/60 placeholder:font-normal outline-none"
+            />
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t('field.dateOfBirth')}</label>
+          <div className="mt-2 flex items-center gap-2.5 rounded-2xl bg-card px-3.5 py-3.5 border border-border shadow-card focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15 transition-all">
+            <Calendar size={17} className="text-muted-foreground shrink-0" />
+            <input
+              type="date"
+              min={DOB_MIN}
+              max={DOB_MAX}
+              value={dateOfBirth}
+              onChange={(e) => { setDateOfBirth(e.target.value); if (authError) clearAuthError() }}
+              className="flex-1 min-w-0 bg-transparent text-[15px] font-medium text-foreground outline-none"
+            />
+          </div>
+        </div>
+
         {authError && <p className="text-[12px] text-destructive mt-3">{authError}</p>}
         </div>
       </div>
 
       <div className="px-6 pt-3 shrink-0" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 22px)' }}>
         <button
-          onClick={onRegister}
-          disabled={isSubmitting}
+          onClick={submit}
+          disabled={!valid || isSubmitting}
           className="press w-full bg-primary text-primary-foreground rounded-full py-4 text-[15px] font-semibold shadow-brand flex items-center justify-center gap-2 disabled:opacity-40 disabled:shadow-none"
         >
           {isSubmitting ? t('auth.creatingAccount') : t('auth.createAccount')}
@@ -337,9 +377,9 @@ export function LoginPage() {
     } catch { /* surfaced via authError */ }
   }
 
-  const handleRegister = async () => {
+  const handleRegister = async (fullName: string, dateOfBirth: string) => {
     try {
-      await register(phone, registrationTicket)
+      await register(phone, registrationTicket, fullName, dateOfBirth)
       // On success the session is persisted → AuthGate redirects to /home.
     } catch { /* surfaced via authError */ }
   }

@@ -60,6 +60,7 @@ export const uz: Record<TranslationKey, string> = {
   'field.fullName': "To'liq ism",
   'field.fullNamePlaceholder': "To'liq ismingiz",
   'field.phone': 'Telefon',
+  'field.dateOfBirth': "Tug'ilgan sana",
 
   'common.saving': 'Saqlanmoqda…',
   'common.save': 'Saqlash',

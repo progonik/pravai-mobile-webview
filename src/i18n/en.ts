@@ -58,6 +58,7 @@ export const en = {
   'field.fullName': 'Full name',
   'field.fullNamePlaceholder': 'Your full name',
   'field.phone': 'Phone',
+  'field.dateOfBirth': 'Date of birth',
 
   'common.saving': 'Saving…',
   'common.save': 'Save',

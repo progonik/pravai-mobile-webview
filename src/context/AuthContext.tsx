@@ -83,7 +83,7 @@ interface AuthContextValue {
   /** Step 3 (only for a phone verifyOtp didn't recognize): create the
    *  account using the ticket verifyOtp's outcome carried, then persist the
    *  session exactly like a normal login. */
-  register: (phone: string, registrationTicket: string) => Promise<void>
+  register: (phone: string, registrationTicket: string, fullName: string, dateOfBirth: string) => Promise<void>
   /** Upload a new avatar; merges the result into the persisted session. */
   uploadAvatar: (file: File) => Promise<void>
   updateFullName: (fullName: string) => Promise<void>
@@ -207,9 +207,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     })
 
-  const register = (phone: string, registrationTicket: string) =>
+  const register = (phone: string, registrationTicket: string, fullName: string, dateOfBirth: string) =>
     run(async () => {
-      const result = await apiRegister(phone, registrationTicket)
+      const result = await apiRegister(phone, registrationTicket, fullName, dateOfBirth)
       const user = toUserProfile(result.user)
       setSession(persistSession(result, user))
       window.dispatchEvent(new Event('pravai-authenticated'))

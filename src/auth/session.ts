@@ -21,11 +21,12 @@ export interface TokenPair {
   refresh_token: string
 }
 
-/** The `user` object embedded in the verify-OTP response. */
+/** The `user` object embedded in the verify-OTP/register response. */
 export interface BackendUser {
   id: string
   phone: string
   full_name: string | null
+  date_of_birth: string | null
 }
 
 export interface VerifyOtpResult extends TokenPair {
@@ -47,6 +48,7 @@ export interface MeResponse {
   id: string
   phone: string
   full_name: string | null
+  date_of_birth: string | null
   avatar_url: string | null
   app_language: Lang
 }
@@ -59,6 +61,7 @@ export const toUserProfile = (u: BackendUser): UserProfile => ({
   id: u.id,
   phone: u.phone,
   fullName: u.full_name,
+  dateOfBirth: u.date_of_birth,
   avatarUrl: null,
   appLanguage: 'uz',
 })
@@ -68,6 +71,7 @@ export const toUserProfileFromMe = (u: MeResponse): UserProfile => ({
   id: u.id,
   phone: u.phone,
   fullName: u.full_name,
+  dateOfBirth: u.date_of_birth,
   avatarUrl: u.avatar_url,
   appLanguage: u.app_language,
 })

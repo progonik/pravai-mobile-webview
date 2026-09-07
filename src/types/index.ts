@@ -8,6 +8,8 @@ export interface UserProfile {
   id: string
   phone: string
   fullName: string | null
+  /** "YYYY-MM-DD", or null for an account created before this field existed. */
+  dateOfBirth: string | null
   avatarUrl: string | null
   appLanguage: Lang
 }

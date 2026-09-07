@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronRight, Moon, Phone, Sun, User } from 'lucide-react'
+import { Calendar, ChevronRight, Moon, Phone, Sun, User } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
 import { useAuth } from '../context/AuthContext'
 import { useLocale, useT } from '../context/LocaleContext'
@@ -37,6 +37,7 @@ export function MyInfoPage() {
   const rows: InfoRow[] = [
     { label: t('field.fullName'), value: profile?.fullName || '—', icon: <User size={16} /> },
     { label: t('field.phone'), value: profile?.phone ?? '', icon: <Phone size={16} /> },
+    { label: t('field.dateOfBirth'), value: profile?.dateOfBirth || '—', icon: <Calendar size={16} /> },
   ]
 
   return (

@@ -163,9 +163,14 @@ a token pair + minimal user back (same as before, persisted immediately via
 to `{status: 'user_not_found', registrationTicket}` instead of rejecting, so
 it's a normal three-way outcome (`ok` / `user_not_found` / thrown error) for
 `LoginPage` to switch on -- not an error path. `LoginPage`'s `register` step
-calls `register(phone, ticket)` → `POST /auth/register`, which consumes the
-ticket in place of the OTP (no second SMS) and returns the same token-pair
-shape as verify. Either path ends the same way: `AuthContext` persists the
+is a real form (full name + date of birth, `<input type="date">` bounded to
+today/120-years-ago to match the backend's own `identity.ValidateDateOfBirth`)
+and calls `register(phone, ticket, fullName, dateOfBirth)` → `POST
+/auth/register`, which consumes the ticket in place of the OTP (no second
+SMS), creates the account with those two fields already set, and returns the
+same token-pair shape as verify -- both fields also come back from `GET
+/users/me` and show up read-only in `MyInfoPage`. Either path ends the same
+way: `AuthContext` persists the
 session, then calls `GET /users/me` once to hydrate the fuller profile
 (avatar, `app_language`).
 

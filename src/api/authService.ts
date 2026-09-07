@@ -15,7 +15,8 @@ import type { MeResponse, TokenPair, UserNotFoundBody, VerifyOtpResult } from '.
  *   POST /auth/otp/send    { phone }                                     → { message }
  *   POST /auth/otp/verify  { phone, code, device_id }                    → VerifyOtpResult
  *                                                                          | 404 UserNotFoundBody
- *   POST /auth/register    { phone, registration_ticket, device_id }     → VerifyOtpResult
+ *   POST /auth/register    { phone, registration_ticket, device_id,
+ *                            full_name, date_of_birth }                   → VerifyOtpResult
  *   POST /auth/refresh     { refresh_token, device_id }                   → TokenPair
  *   POST /auth/logout      { refresh_token }                              → { message }
  *   GET  /users/me                                                        → MeResponse
@@ -60,10 +61,21 @@ export async function verifyOtp(phone: string, code: string): Promise<VerifyOtpR
   }
 }
 
-export async function register(phone: string, registrationTicket: string): Promise<VerifyOtpResult> {
+export async function register(
+  phone: string,
+  registrationTicket: string,
+  fullName: string,
+  dateOfBirth: string,
+): Promise<VerifyOtpResult> {
   return request.post(
     '/api/v1/auth/register',
-    { phone, registration_ticket: registrationTicket, device_id: getDeviceId() },
+    {
+      phone,
+      registration_ticket: registrationTicket,
+      device_id: getDeviceId(),
+      full_name: fullName,
+      date_of_birth: dateOfBirth,
+    },
     { params: { lang: getActiveLang() } },
   )
 }

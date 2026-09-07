@@ -60,6 +60,7 @@ export const ru: Record<TranslationKey, string> = {
   'field.fullName': 'Полное имя',
   'field.fullNamePlaceholder': 'Ваше полное имя',
   'field.phone': 'Телефон',
+  'field.dateOfBirth': 'Дата рождения',
 
   'common.saving': 'Сохранение…',
   'common.save': 'Сохранить',
