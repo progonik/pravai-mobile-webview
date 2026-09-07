@@ -27,14 +27,14 @@ export function LanguageSelector() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="press flex items-center gap-1.5 pl-2.5 pr-2 py-1.5 rounded-xl bg-card border border-border shadow-card text-[13px] font-medium text-foreground"
+        className="glass press flex items-center gap-1.5 pl-2.5 pr-2 py-1.5 rounded-full bg-card border border-edge shadow-card text-[13px] font-medium text-foreground"
       >
         <span className="text-base leading-none">{current.flag}</span>
         <span className="text-[12px] font-semibold text-muted-foreground">{current.code.toUpperCase()}</span>
         <ChevronDown size={13} className={`text-muted-foreground transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-44 bg-card rounded-2xl shadow-float border border-border overflow-hidden z-50">
+        <div className="glass absolute right-0 top-full mt-2 w-44 bg-card rounded-2xl shadow-float border border-edge overflow-hidden z-50">
           <div className="px-3 pt-2.5 pb-1">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t('lang.label')}</p>
           </div>
@@ -57,16 +57,21 @@ export function LanguageSelector() {
 }
 
 /**
- * The wordmark. A dark tile with a hard pop shadow and a mustard-stroke car
- * icon — design/pravai.html's `.logo-mark` -- rather than a soft gradient
- * glow, so the first screen of the app already looks like the poster the
- * rest of it is printed on.
+ * The wordmark. A soft mustard tile with a gentle brand-tinted glow, sitting
+ * on glass like everything else in the sign-in flow, rather than the poster
+ * pass's flat dark tile with a hard offset shadow.
  */
 export function LogoMark() {
   return (
     <div className="flex items-center gap-2.5">
-      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[var(--frame)] border-2 border-edge shadow-pop-sm">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <div
+        className="w-10 h-10 rounded-2xl flex items-center justify-center"
+        style={{
+          background: 'linear-gradient(135deg, #FFD873 0%, #FFC531 100%)',
+          boxShadow: 'var(--shadow-brand)',
+        }}
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-foreground)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 17h1.5l1.2-4.8A2 2 0 0 1 7.6 10.6h8.8a2 2 0 0 1 1.9 1.4L19.5 17H21" />
           <circle cx="7.5" cy="17.5" r="1.7" />
           <circle cx="16.5" cy="17.5" r="1.7" />

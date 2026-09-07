@@ -74,10 +74,13 @@ function PhoneStep({ onNext }: { onNext: (e164: string) => void }) {
             margin. Unlike `justify-center` they collapse when the keyboard
             leaves no room, so the heading is never clipped off the top. */}
         <div className="w-full my-auto pb-[16%] [@media(max-height:620px)]:pb-0">
-        {/* The one dark surface on this screen — same tile the wordmark uses,
-            so sign-in is the first screen of the product itself. */}
-        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 enter-1 bg-[var(--frame)] border-2 border-edge shadow-pop">
-          <Phone size={28} className="text-primary" />
+        {/* The one warm gradient surface on this screen — same tile the
+            wordmark uses, so sign-in is the first screen of the product itself. */}
+        <div
+          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 enter-1"
+          style={{ background: 'linear-gradient(135deg, #FFD873 0%, #FFC531 100%)', boxShadow: 'var(--shadow-brand)' }}
+        >
+          <Phone size={28} className="text-primary-foreground" />
         </div>
 
         <h1 className="font-display text-[26px] font-bold text-foreground leading-[1.15] tracking-tight enter-1">{t('auth.welcome')}</h1>
@@ -126,7 +129,7 @@ function PhoneStep({ onNext }: { onNext: (e164: string) => void }) {
         <button
           onClick={submit}
           disabled={!valid || isSubmitting}
-          className="press-pop w-full bg-primary text-primary-foreground rounded-2xl py-4 text-[15px] font-bold uppercase tracking-wide border-2 border-edge shadow-brand flex items-center justify-center gap-2 disabled:opacity-40 disabled:shadow-none"
+          className="press w-full bg-primary text-primary-foreground rounded-full py-4 text-[15px] font-semibold shadow-brand flex items-center justify-center gap-2 disabled:opacity-40 disabled:shadow-none"
         >
           {isSubmitting ? t('auth.sending') : t('auth.sendCode')}
           {!isSubmitting && <ArrowRight size={18} />}
@@ -202,8 +205,11 @@ function OtpStep({ phone, onVerify, onBack, onResend }: {
         {/* Auto margins rather than `justify-center`: they collapse when the
             keyboard shrinks the viewport, so nothing is clipped off the top. */}
         <div className="w-full my-auto pb-[16%] [@media(max-height:620px)]:pb-0">
-        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 bg-[var(--frame)] border-2 border-edge shadow-pop">
-          <ShieldCheck size={28} className="text-primary" />
+        <div
+          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
+          style={{ background: 'linear-gradient(135deg, #FFD873 0%, #FFC531 100%)', boxShadow: 'var(--shadow-brand)' }}
+        >
+          <ShieldCheck size={28} className="text-primary-foreground" />
         </div>
         <h1 className="font-display text-[22px] font-bold text-foreground leading-tight tracking-tight">{t('auth.verifyTitle')}</h1>
         <p className="text-[14px] text-muted-foreground mt-2 leading-relaxed">
@@ -221,11 +227,11 @@ function OtpStep({ phone, onVerify, onBack, onResend }: {
               value={digit}
               onChange={(e) => setDigit(e.target.value, i)}
               onKeyDown={(e) => handleKey(e, i)}
-              // A filled slot takes the accent tint, matching
-              // design/pravai.html's `.otp-boxes input:focus` treatment.
-              className={`font-display w-full aspect-square max-w-[52px] text-center text-[22px] font-bold rounded-xl border-2 border-edge outline-none numeric transition-all ${
-                digit ? 'bg-accent text-foreground' : 'bg-card text-foreground'
-              } focus:bg-accent`}
+              // A filled/focused slot takes a soft accent ring, like an
+              // iOS text field rather than a poster-style hard-edged box.
+              className={`glass w-full aspect-square max-w-[52px] text-center text-[22px] font-semibold rounded-2xl border outline-none numeric transition-all bg-card text-foreground ${
+                digit ? 'border-primary ring-2 ring-primary/25' : 'border-edge'
+              } focus:border-primary focus:ring-2 focus:ring-primary/25`}
             />
           ))}
         </div>
@@ -250,7 +256,7 @@ function OtpStep({ phone, onVerify, onBack, onResend }: {
         <button
           onClick={() => onVerify(code)}
           disabled={!complete || isSubmitting || expired}
-          className="press-pop w-full bg-primary text-primary-foreground rounded-2xl py-4 text-[15px] font-bold uppercase tracking-wide border-2 border-edge shadow-brand flex items-center justify-center gap-2 disabled:opacity-40 disabled:shadow-none"
+          className="press w-full bg-primary text-primary-foreground rounded-full py-4 text-[15px] font-semibold shadow-brand flex items-center justify-center gap-2 disabled:opacity-40 disabled:shadow-none"
         >
           {isSubmitting ? t('auth.verifying') : expired ? t('auth.codeExpired') : t('auth.verify')}
           {!isSubmitting && !expired && <ArrowRight size={18} />}

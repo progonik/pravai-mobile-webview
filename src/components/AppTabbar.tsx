@@ -12,10 +12,9 @@ const tabs = [
 ] as const
 
 /**
- * Bottom nav, matching design/pravai.html's `.tab` / `.tab.active`: each
- * button is its own surface, and the active one flips to a solid accent
- * block with the poster's edge border and a small pop shadow -- a state
- * readable from a single frame, not a highlight sliding in from off-screen.
+ * Bottom nav, Apple's own convention: a frosted glass bar with a hairline
+ * top edge, and the active tab marked by tinting its icon+label in the
+ * accent colour -- not a filled block or a highlight sliding underneath.
  */
 export function AppTabbar() {
   const navigate = useNavigate()
@@ -36,34 +35,34 @@ export function AppTabbar() {
   }
 
   return (
-    <div
-      className="shrink-0 px-3 pt-1.5"
-      // The dock hovers above the home indicator rather than merging with it.
-      style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 12px)' }}
+    <div className="glass shrink-0 flex items-center justify-around border-t border-hairline bg-card px-1 pt-1.5"
+      style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 6px)' }}
     >
-      <div className="flex items-center gap-1.5 px-2 py-2 rounded-[26px] bg-card border-2 border-edge">
-        {tabs.map(({ path, labelKey, Icon }) => {
-          const isActive = pathname === path || (pathname === '/' && path === '/home')
+      {tabs.map(({ path, labelKey, Icon }) => {
+        const isActive = pathname === path || (pathname === '/' && path === '/home')
 
-          return (
-            <button
-              key={path}
-              onClick={() => openTab(path, isActive)}
-              aria-current={isActive ? 'page' : undefined}
-              className={`press-tab flex-1 h-[52px] flex flex-col items-center justify-center gap-1 rounded-2xl border-2 transition-colors duration-150 ${
-                isActive
-                  ? 'bg-primary border-edge shadow-pop-sm text-primary-foreground'
-                  : 'border-transparent text-muted-foreground'
+        return (
+          <button
+            key={path}
+            onClick={() => openTab(path, isActive)}
+            aria-current={isActive ? 'page' : undefined}
+            className="press-tab flex-1 h-[52px] flex flex-col items-center justify-center gap-0.5"
+          >
+            <Icon
+              size={24}
+              strokeWidth={isActive ? 2.2 : 1.8}
+              className={isActive ? 'text-primary' : 'text-muted-foreground'}
+            />
+            <span
+              className={`text-[10px] leading-none font-semibold ${
+                isActive ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Icon size={21} strokeWidth={isActive ? 2.4 : 1.8} />
-              <span className="text-[10px] leading-none font-extrabold uppercase tracking-wide">
-                {t(labelKey)}
-              </span>
-            </button>
-          )
-        })}
-      </div>
+              {t(labelKey)}
+            </span>
+          </button>
+        )
+      })}
     </div>
   )
 }

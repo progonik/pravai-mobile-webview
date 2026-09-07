@@ -45,23 +45,20 @@ export function WelcomeScreen() {
       }`}
       role="status"
     >
-      {/* The same printed dot-grid texture the rest of the app is on, just
-          in ink-on-accent instead of ink-on-paper. */}
+      {/* A soft bloom rather than a printed texture — glass reads through
+          light and blur, not ink on paper. */}
       <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: 'radial-gradient(rgba(24,22,17,0.16) 1.4px, transparent 1.4px)',
-          backgroundSize: '22px 22px',
-        }}
+        className="absolute -top-24 -right-16 w-72 h-72 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 70%)' }}
       />
 
       <div className="relative flex flex-col items-center">
         {/* Two rings expanding out of the tick, so the confirmation reads as an
             event rather than a static icon. */}
         <div className="relative w-24 h-24 flex items-center justify-center">
-          <span className="welcome-ring absolute inset-0 rounded-full border-2 border-[var(--frame)]/35" />
-          <span className="welcome-ring absolute inset-0 rounded-full border-2 border-[var(--frame)]/20" style={{ animationDelay: '0.35s' }} />
-          <div className="w-24 h-24 rounded-full bg-[var(--frame)] border-2 border-edge shadow-pop flex items-center justify-center animate-pop-in">
+          <span className="welcome-ring absolute inset-0 rounded-full border-2 border-white/50" />
+          <span className="welcome-ring absolute inset-0 rounded-full border-2 border-white/30" style={{ animationDelay: '0.35s' }} />
+          <div className="glass w-24 h-24 rounded-full bg-white/90 flex items-center justify-center animate-pop-in" style={{ boxShadow: 'var(--shadow-float)' }}>
             <Check size={46} className="text-primary" strokeWidth={3} />
           </div>
         </div>

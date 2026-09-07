@@ -11,15 +11,15 @@ export function PageHeader({ title, subtitle, right, onBack }: {
 }) {
   const navigate = useNavigate()
   return (
-    <div className="top-inset flex items-center gap-3 px-4 pb-3 bg-card border-b-2 border-edge shrink-0">
+    <div className="glass top-inset flex items-center gap-3 px-4 pb-3 bg-card border-b border-hairline shrink-0">
       <button
         onClick={onBack ?? (() => navigate(-1))}
-        className="press w-9 h-9 rounded-xl bg-input-background border-2 border-edge flex items-center justify-center text-foreground"
+        className="press w-9 h-9 rounded-full bg-input-background flex items-center justify-center text-foreground"
       >
         <ChevronLeft size={20} />
       </button>
       <div className="flex-1 min-w-0">
-        <p className="font-display text-[16px] font-bold text-foreground leading-tight truncate">{title}</p>
+        <p className="font-display text-[16px] font-semibold text-foreground leading-tight truncate">{title}</p>
         {subtitle && <p className="text-[11px] text-muted-foreground truncate">{subtitle}</p>}
       </div>
       {right}

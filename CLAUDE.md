@@ -5,13 +5,16 @@ Meant to run inside a native iOS/Android WebView shell; `src/lib/nativeBridge.ts
 the boundary to it (no shell exists yet -- see "Status" below).
 
 This project was scaffolded from `progress-master-app` (a sibling product's
-mobile webview, same architecture) by stripping its e-commerce domain,
-rewiring auth to PravAI's own backend, and re-skinning the whole design layer
-to PravAI's own look (see `design/pravai.html` in the main `pravai` repo) —
-Progress's soft blue/gradient palette is gone. The **app mechanics** (press
-states, screen transitions, scroll memory, the tabbar's measurement/render
-split, safe-area handling) are carried over unchanged on purpose: they're
-solved interaction problems, not decisions specific to either product's
+mobile webview, same architecture) by stripping its e-commerce domain and
+rewiring auth to PravAI's own backend. The design layer went through two
+passes: first a port of PravAI's poster-style prototype (`design/pravai.html`
+in the main `pravai` repo), then a deliberate departure from it into an
+iOS-glass/glassmorphism look, per product direction. `design/pravai.html` is
+no longer the visual source of truth for this app — only its mustard brand
+color (`#FFC531`) carries over. The **app mechanics** (press states, screen
+transitions, scroll memory, the tabbar's measurement/render split, safe-area
+handling) are carried over unchanged from `progress-master-app` on purpose:
+they're solved interaction problems, not decisions specific to any product's
 branding.
 
 ## Status (read this before adding a screen)
@@ -36,32 +39,36 @@ mobile-facing endpoint on the backend (`pravai` repo) instead.
 
 ## Design primitives
 
-Everything below is defined once in `src/index.css`, ported from
-`design/pravai.html` in the main `pravai` repo (that file is the source of
-truth for the palette — keep the two in sync). It's a warm-paper, hard-edge
-poster look, not a soft corporate one: thick near-black borders, a flat
-mustard accent, and offset "pop" shadows with zero blur (a shape drawn by an
-edge, not a glow) — the opposite of `progress-master-app`'s ambient
-drop-shadow ramp, even though the token *names* below are unchanged from it.
+Everything below is defined once in `src/index.css`. It's an iOS-glass
+(glassmorphism) look: translucent, blurred surfaces over a warm ambient
+backdrop, soft shadows, no hard edges or offset "pop" shapes. Mustard
+(`--primary: #FFC531`) is the one carried-over brand color; everything else
+here is new.
 
-**Fonts.** `font-display` (Unbounded, bold/uppercase, headings and primary
-buttons) and the default body font (Manrope). Both embedded as base64
-`@font-face` data URIs directly in `index.css`, matching how
-`design/pravai.html` ships them — no external font request, but it does mean
-the CSS bundle is ~100KB heavier than a typical app; worth revisiting (a real
-font file + `<link rel="preload">`) if that ever matters for load time.
+**Fonts.** System font stack (`-apple-system, BlinkMacSystemFont, 'SF Pro
+Text'/'SF Pro Display', ...`) for both `font-display` and body text — no
+embedded webfonts, so the CSS bundle is small (~33KB / 7.4KB gzip) and text
+renders as San Francisco on a real iOS device with zero font-loading cost.
 
-**Elevation.** `shadow-pop` / `shadow-pop-sm` are the signature move: a hard
-4px/3px offset in `--edge`, no blur. Reserved for things that should read as
-sitting *above* the page stock — the primary CTA, the active tab, the OTP
-digit's focus state — and paired with `.press-pop` (or `.press-pop-sm`),
-which collapses the shadow and translates the element by the same offset on
-press, so it reads as being pushed flat rather than merely dimming. Ordinary
-cards are flat (`shadow-card` resolves to `none`) with just a `border-border`
-— see `.card` in `design/pravai.html`. `shadow-raised`/`shadow-float` cover
-headers-once-scrolled and sheets/popovers respectively, both softer/ambient
-(`shadow-ambient`) since those need real separation from the page, not a
-poster edge.
+**Glass.** `.glass` (and the blanket `.bg-card` rule) apply
+`backdrop-filter: blur(24px) saturate(180%)` — this is what makes card/sheet/
+header surfaces read as frosted panels with the warm `.bg-decor` backdrop
+bleeding through, rather than flat fills. Anything meant to look like an iOS
+sheet, tab bar, or header should carry `.glass` (or use `bg-card`, which
+already has it baked in).
+
+**Elevation.** All shadows are soft and ambient now — no hard offsets.
+`shadow-brand` (mustard-tinted glow) marks the primary CTA and brand tiles;
+`shadow-float` is for the welcome screen's icon and sheets/popovers;
+`shadow-raised` covers headers-once-scrolled; `shadow-glass`/`shadow-card`
+is the default resting elevation for cards. Press feedback is `.press`
+(opacity dip + slight scale) and `.press-tab` (opacity dip only) — there is
+no `press-pop`/hard-edge-collapse interaction anymore.
+
+**Buttons.** Primary actions are full pill shapes (`rounded-full`) in
+`bg-primary text-primary-foreground`, not the poster's bordered/uppercase
+block — match `LoginPage.tsx`'s submit button or `MyInfoPage.tsx`'s edit
+button for the current convention.
 
 **Surfaces.** `bg-background` (the paper) → `bg-card` (a surface on it) →
 `bg-surface-sunken` (a well *inside* a card). Divider between cards is the
