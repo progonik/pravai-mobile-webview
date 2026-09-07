@@ -20,6 +20,11 @@ export const uz: Record<TranslationKey, string> = {
   'auth.uploadFailed': "Yuklab bo'lmadi. Qayta urinib ko'ring.",
   'auth.uploading': 'Yuklanmoqda…',
   'auth.uploadPhoto': "Rasm qo'shish",
+  'auth.registerTitle': "Hisobingizni yarataylik",
+  'auth.registerIntro': 'Bu raqam uchun hisob topilmadi: ',
+  'auth.createAccount': "Hisob yaratish",
+  'auth.creatingAccount': "Hisob yaratilmoqda…",
+  'auth.somethingWrong': "Nimadir xato ketdi. Qaytadan urinib ko'ring.",
 
   'home.greeting': 'Xush kelibsiz',
   'home.placeholderTitle': 'Mashq paneli tez orada',

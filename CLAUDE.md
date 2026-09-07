@@ -20,8 +20,9 @@ decisions specific to any product's branding.
 ## Status (read this before adding a screen)
 
 **Real and working, verified against the live API (`pravai-api.ai-bek.com`):**
-phone+OTP sign-in (auto-registers a new phone, no separate register/profile
-step), session persistence + silent refresh-on-401, `GET/PATCH /users/me`,
+phone+OTP sign-in with a distinct registration step for a phone with no
+existing account (see "Auth flow" below), session persistence + silent
+refresh-on-401, `GET/PATCH /users/me`,
 `PATCH /users/me/language`, avatar upload, the language switcher (with
 backend sync), tab navigation, scroll memory, the welcome screen.
 
@@ -150,12 +151,31 @@ double-tap does not zoom — both set globally in `index.css`.
 
 `sendOtp(phone)` → `POST /auth/otp/send`. `verifyOtp(phone, code)` →
 `POST /auth/otp/verify` with a per-device id (`src/lib/deviceId.ts`, a UUID
-persisted outside the user-scoped storage keys so it survives sign-out) —
-the response is a bare token pair + minimal user, persisted immediately via
-`src/auth/session.ts`. No separate registration or profile-completion step:
-a new phone is silently created by the backend (`is_new_user` in the
-response is informational only). `AuthContext` then calls `GET /users/me`
-once to hydrate the fuller profile (avatar, `app_language`).
+persisted outside the user-scoped storage keys so it survives sign-out).
+
+The backend no longer auto-registers: a phone with an existing account gets
+a token pair + minimal user back (same as before, persisted immediately via
+`src/auth/session.ts`); a phone with no account gets a 404 with
+`code: "user_not_found"` plus a short-lived `registration_ticket`.
+`authService.verifyOtp` turns that specific 404 into a thrown
+`UserNotFoundError` (carrying the ticket) rather than a generic failure;
+`AuthContext.verifyOtp` catches it *inside* the `run()` wrapper and resolves
+to `{status: 'user_not_found', registrationTicket}` instead of rejecting, so
+it's a normal three-way outcome (`ok` / `user_not_found` / thrown error) for
+`LoginPage` to switch on -- not an error path. `LoginPage`'s `register` step
+calls `register(phone, ticket)` → `POST /auth/register`, which consumes the
+ticket in place of the OTP (no second SMS) and returns the same token-pair
+shape as verify. Either path ends the same way: `AuthContext` persists the
+session, then calls `GET /users/me` once to hydrate the fuller profile
+(avatar, `app_language`).
+
+`sendOtp`/`verifyOtp`/`register` all pass `?lang=` (the UI's current
+language, via `i18n/activeLang.ts`) on every call -- there's no saved
+`app_language` yet at any point before a session exists, so this is the only
+way the backend knows what language to localize its error messages into
+(`{"error": "...", "code": "..."}`, both server-localized now -- see
+`getAuthErrorMessage` in `AuthContext.tsx`, which no longer runs backend
+error text through a client-side translation table).
 
 `src/api/request.ts` is the one axios instance: attaches the bearer token,
 unwraps the plain JSON body (`{"error": "..."}` on failure, the resource

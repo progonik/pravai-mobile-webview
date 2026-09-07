@@ -33,6 +33,15 @@ export interface VerifyOtpResult extends TokenPair {
   is_new_user: boolean
 }
 
+/** The 404 body POST /auth/otp/verify returns for a phone with no account --
+ *  the registration_ticket is what POST /auth/register needs in place of a
+ *  re-entered OTP. */
+export interface UserNotFoundBody {
+  error: string
+  code: 'user_not_found'
+  registration_ticket: string
+}
+
 /** GET /api/v1/users/me's full shape (a superset of BackendUser). */
 export interface MeResponse {
   id: string

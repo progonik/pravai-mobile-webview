@@ -18,6 +18,11 @@ export const en = {
   'auth.uploadFailed': 'Upload failed. Try again.',
   'auth.uploading': 'Uploading…',
   'auth.uploadPhoto': 'Add a photo',
+  'auth.registerTitle': "Let's create your account",
+  'auth.registerIntro': 'No account found for ',
+  'auth.createAccount': 'Create account',
+  'auth.creatingAccount': 'Creating account…',
+  'auth.somethingWrong': 'Something went wrong. Please try again.',
 
   'home.greeting': 'Welcome back',
   'home.placeholderTitle': 'Your practice dashboard is on its way',

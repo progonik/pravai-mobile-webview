@@ -20,6 +20,11 @@ export const ru: Record<TranslationKey, string> = {
   'auth.uploadFailed': 'Не удалось загрузить. Попробуйте снова.',
   'auth.uploading': 'Загрузка…',
   'auth.uploadPhoto': 'Добавить фото',
+  'auth.registerTitle': 'Создадим ваш аккаунт',
+  'auth.registerIntro': 'Аккаунт не найден для ',
+  'auth.createAccount': 'Создать аккаунт',
+  'auth.creatingAccount': 'Создание аккаунта…',
+  'auth.somethingWrong': 'Что-то пошло не так. Попробуйте снова.',
 
   'home.greeting': 'С возвращением',
   'home.placeholderTitle': 'Панель тренировок скоро появится',

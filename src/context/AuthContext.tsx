@@ -11,14 +11,17 @@ import type { AxiosError } from 'axios'
 import {
   getMe as apiGetMe,
   logout as apiLogout,
+  register as apiRegister,
   sendOtp as apiSendOtp,
   updateAppLanguage as apiUpdateAppLanguage,
   updateFullName as apiUpdateFullName,
   uploadAvatar as apiUploadAvatar,
   verifyOtp as apiVerifyOtp,
+  UserNotFoundError,
 } from '../api/authService'
 import { resetQueryCache } from '../api/queryClient'
 import { setUnauthorizedHandler } from '../api/unauthorizedHandler'
+import { getActiveLang } from '../i18n/activeLang'
 import {
   subscribeToNotifications,
   unsubscribeFromNotifications,
@@ -36,32 +39,37 @@ import type { Lang, UserProfile } from '../types'
 /** Axios's own text for any non-2xx response — never fit to show a user. */
 const AXIOS_STATUS_MESSAGE = /^request failed with status code \d+$/i
 
-/** Backend phrasing → what the user should actually read. */
-const FRIENDLY_MESSAGES: { match: RegExp; message: string }[] = [
-  { match: /otp not found or expired/i, message: 'That code is incorrect or has expired. Request a new one.' },
-  { match: /invalid otp code/i, message: 'That code is incorrect. Please check it and try again.' },
-  { match: /too many attempts/i, message: 'Too many attempts. Request a new code.' },
-  { match: /please wait before requesting/i, message: 'Please wait a moment before requesting another code.' },
-  { match: /invalid phone number/i, message: 'Please enter a valid phone number.' },
-  { match: /user is inactive/i, message: 'This account has been deactivated.' },
-]
-
-/** The shape the backend returns alongside a 4xx/5xx: {"error": "..."}. */
+/** The shape the backend returns alongside a 4xx/5xx: {"error": "...", "code": "..."}.
+ *  `error` is already localized server-side (send/verify/register pass
+ *  `?lang=` for exactly this reason) -- no client-side translation needed. */
 interface ApiErrorBody {
   error?: string
+  code?: string
+}
+
+/** Only reached when there's no response body at all (a genuine network
+ *  failure) -- the one auth-error string this app still translates itself,
+ *  since the backend never got a chance to. */
+const NETWORK_ERROR_FALLBACK: Record<Lang, string> = {
+  uz: "Nimadir xato ketdi. Qaytadan urinib ko'ring.",
+  ru: 'Что-то пошло не так. Попробуйте снова.',
+  en: 'Something went wrong. Please try again.',
 }
 
 function getAuthErrorMessage(error: unknown): string {
   const raw = (error as AxiosError<ApiErrorBody> | null)?.response?.data?.error
     ?? (error instanceof Error && !AXIOS_STATUS_MESSAGE.test(error.message) ? error.message : undefined)
 
-  if (typeof raw === 'string' && raw.trim()) {
-    const friendly = FRIENDLY_MESSAGES.find((f) => f.match.test(raw))
-    if (friendly) return friendly.message
-    return raw
-  }
-  return 'Something went wrong. Please try again.'
+  if (typeof raw === 'string' && raw.trim()) return raw
+  return NETWORK_ERROR_FALLBACK[getActiveLang()]
 }
+
+/** verifyOtp's result: either the session was persisted (a login), or the
+ *  phone isn't registered yet and the caller should move to the register
+ *  step with the ticket in hand. */
+export type VerifyOtpOutcome =
+  | { status: 'ok' }
+  | { status: 'user_not_found'; registrationTicket: string }
 
 interface AuthContextValue {
   session: AuthSession | null
@@ -69,8 +77,13 @@ interface AuthContextValue {
   isAuthorized: boolean
   /** Step 1: request an OTP. */
   sendOtp: (phone: string) => Promise<void>
-  /** Step 2: verify the OTP -- persists the session on success (login or fresh registration alike). */
-  verifyOtp: (phone: string, code: string) => Promise<void>
+  /** Step 2: verify the OTP -- persists the session on success, or reports
+   *  back that this phone needs to go through registration instead. */
+  verifyOtp: (phone: string, code: string) => Promise<VerifyOtpOutcome>
+  /** Step 3 (only for a phone verifyOtp didn't recognize): create the
+   *  account using the ticket verifyOtp's outcome carried, then persist the
+   *  session exactly like a normal login. */
+  register: (phone: string, registrationTicket: string) => Promise<void>
   /** Upload a new avatar; merges the result into the persisted session. */
   uploadAvatar: (file: File) => Promise<void>
   updateFullName: (fullName: string) => Promise<void>
@@ -93,7 +106,8 @@ const AuthContext = createContext<AuthContextValue>({
   profile: null,
   isAuthorized: false,
   sendOtp: async () => {},
-  verifyOtp: async () => {},
+  verifyOtp: async () => ({ status: 'ok' }),
+  register: async () => {},
   uploadAvatar: async () => {},
   updateFullName: async () => {},
   updateAppLanguage: async () => {},
@@ -171,9 +185,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const sendOtp = (phone: string) => run(() => apiSendOtp(phone))
 
-  const verifyOtp = (phone: string, code: string) =>
+  // A phone verifyOtp doesn't recognize is an expected branch, not a failure
+  // -- caught here (inside the fn `run` wraps) rather than left to propagate,
+  // so `run` never sets authError or rethrows for it; the caller reads the
+  // outcome instead and decides whether to show an error or move to
+  // registration.
+  const verifyOtp = (phone: string, code: string): Promise<VerifyOtpOutcome> =>
     run(async () => {
-      const result = await apiVerifyOtp(phone, code)
+      try {
+        const result = await apiVerifyOtp(phone, code)
+        const user = toUserProfile(result.user)
+        setSession(persistSession(result, user))
+        window.dispatchEvent(new Event('pravai-authenticated'))
+        setJustSignedIn(true)
+        return { status: 'ok' } as const
+      } catch (err) {
+        if (err instanceof UserNotFoundError) {
+          return { status: 'user_not_found', registrationTicket: err.registrationTicket } as const
+        }
+        throw err
+      }
+    })
+
+  const register = (phone: string, registrationTicket: string) =>
+    run(async () => {
+      const result = await apiRegister(phone, registrationTicket)
       const user = toUserProfile(result.user)
       setSession(persistSession(result, user))
       window.dispatchEvent(new Event('pravai-authenticated'))
@@ -228,6 +264,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthorized,
         sendOtp,
         verifyOtp,
+        register,
         uploadAvatar,
         updateFullName,
         updateAppLanguage,

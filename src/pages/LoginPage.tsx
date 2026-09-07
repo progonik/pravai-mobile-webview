@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, Check, ChevronLeft, Phone, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Check, ChevronLeft, Phone, ShieldCheck, UserPlus } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { LanguageSelector, LogoMark } from '../components/auth/AuthUI'
 import { useT } from '../context/LocaleContext'
@@ -7,7 +7,7 @@ import {
   formatE164, formatUzPhone, isCompleteUzPhone, isValidUzPhone, sanitizeUzDigits, toE164, UZ_CODE,
 } from '../utils/phone'
 
-type Step = 'phone' | 'otp'
+type Step = 'phone' | 'otp' | 'register'
 
 const STEP_COUNT = 2
 
@@ -266,11 +266,56 @@ function OtpStep({ phone, onVerify, onBack, onResend }: {
   )
 }
 
+// ─── Step 3: register (only for a phone verifyOtp didn't recognize) ───────────
+function RegisterStep({ phone, onRegister, onBack }: {
+  phone: string
+  onRegister: () => void
+  onBack: () => void
+}) {
+  const { isSubmitting, authError } = useAuth()
+  const t = useT()
+
+  return (
+    <div className="flex flex-col h-full">
+      <StepHeader step={1} onBack={onBack} />
+
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 py-6 flex flex-col">
+        <div className="w-full my-auto pb-[16%] [@media(max-height:620px)]:pb-0">
+        <div
+          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
+          style={{ background: 'linear-gradient(135deg, #FFD873 0%, #FFC531 100%)', boxShadow: 'var(--shadow-brand)' }}
+        >
+          <UserPlus size={28} className="text-primary-foreground" />
+        </div>
+        <h1 className="font-display text-[22px] font-bold text-foreground leading-tight tracking-tight">{t('auth.registerTitle')}</h1>
+        <p className="text-[14px] text-muted-foreground mt-2 leading-relaxed">
+          {t('auth.registerIntro')}<span className="font-semibold text-foreground numeric">{formatE164(phone)}</span>
+        </p>
+
+        {authError && <p className="text-[12px] text-destructive mt-3">{authError}</p>}
+        </div>
+      </div>
+
+      <div className="px-6 pt-3 shrink-0" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 22px)' }}>
+        <button
+          onClick={onRegister}
+          disabled={isSubmitting}
+          className="press w-full bg-primary text-primary-foreground rounded-full py-4 text-[15px] font-semibold shadow-brand flex items-center justify-center gap-2 disabled:opacity-40 disabled:shadow-none"
+        >
+          {isSubmitting ? t('auth.creatingAccount') : t('auth.createAccount')}
+          {!isSubmitting && <ArrowRight size={18} />}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ─── Login flow ───────────────────────────────────────────────────────────────
 export function LoginPage() {
   const [step, setStep] = useState<Step>('phone')
   const [phone, setPhone] = useState('')
-  const { sendOtp, verifyOtp } = useAuth()
+  const [registrationTicket, setRegistrationTicket] = useState('')
+  const { sendOtp, verifyOtp, register } = useAuth()
 
   const handleSendCode = async (e164: string) => {
     setPhone(e164)
@@ -282,7 +327,19 @@ export function LoginPage() {
 
   const handleVerify = async (code: string) => {
     try {
-      await verifyOtp(phone, code)
+      const outcome = await verifyOtp(phone, code)
+      if (outcome.status === 'user_not_found') {
+        setRegistrationTicket(outcome.registrationTicket)
+        setStep('register')
+        return
+      }
+      // status === 'ok': the session is persisted → AuthGate redirects to /home.
+    } catch { /* surfaced via authError */ }
+  }
+
+  const handleRegister = async () => {
+    try {
+      await register(phone, registrationTicket)
       // On success the session is persisted → AuthGate redirects to /home.
     } catch { /* surfaced via authError */ }
   }
@@ -307,6 +364,13 @@ export function LoginPage() {
             onVerify={handleVerify}
             onBack={() => setStep('phone')}
             onResend={() => sendOtp(phone).catch(() => {})}
+          />
+        )}
+        {step === 'register' && (
+          <RegisterStep
+            phone={phone}
+            onRegister={handleRegister}
+            onBack={() => setStep('otp')}
           />
         )}
       </div>
