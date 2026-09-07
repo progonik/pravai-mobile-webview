@@ -37,6 +37,13 @@ export const ru: Record<TranslationKey, string> = {
 
   'tests.placeholderTitle': 'Тесты скоро появятся',
   'tests.placeholderBody': 'Здесь появятся тренировочные разделы и официальные билеты по темам и категориям.',
+  'tests.practiceSection': 'Практика',
+  'tests.examSection': 'Экзамен',
+  'tests.questionsCount': '{count} вопросов',
+  'tests.noTimeLimit': 'Без ограничения по времени',
+  'tests.officialTicket': 'Официальный билет',
+  'tests.loadFailed': 'Не удалось загрузить тесты. Потяните вниз, чтобы повторить.',
+  'tests.emptySection': 'Пока здесь пусто.',
 
   'quiz.placeholderTitle': 'Прохождение теста скоро появится',
   'quiz.placeholderBody': 'Этот экран проведёт вас по вопросам теста.',

@@ -35,6 +35,13 @@ export const en = {
 
   'tests.placeholderTitle': 'Tests are coming soon',
   'tests.placeholderBody': "Practice sections and official-style tickets will appear here, organized by topic and license category.",
+  'tests.practiceSection': 'Practice',
+  'tests.examSection': 'Exam',
+  'tests.questionsCount': '{count} questions',
+  'tests.noTimeLimit': 'No time limit',
+  'tests.officialTicket': 'Official ticket',
+  'tests.loadFailed': "Couldn't load tests. Pull down to try again.",
+  'tests.emptySection': 'Nothing here yet.',
 
   'quiz.placeholderTitle': 'Test-taking is coming soon',
   'quiz.placeholderBody': 'This screen will walk you through a test question by question.',

@@ -24,15 +24,19 @@ phone+OTP sign-in with a distinct registration step for a phone with no
 existing account (see "Auth flow" below), session persistence + silent
 refresh-on-401, `GET/PATCH /users/me`,
 `PATCH /users/me/language`, avatar upload, the language switcher (with
-backend sync), tab navigation, scroll memory, the welcome screen.
+backend sync), tab navigation, scroll memory, the welcome screen, and
+`TestsPage` (`GET /exam/templates`, grouped by `mode` into Practice/Exam
+sections -- see `src/api/examService.ts`).
 
-**Placeholder only** (`HomePage`, `TestsPage`, `QuizPage`, `ResultPage`,
-`ChatPage` all render a "coming soon" card): these need backend work first.
-Specifically, the backend currently only exposes:
-- `POST /exam/attempts` (start/resume) and `POST /exam/attempts/:id/answer` --
-  no way to *list* available test templates/topics/license categories from a
-  non-admin token yet. The admin-panel equivalents exist under
-  `/api/v1/admin/*` but require an admin role.
+**Placeholder only** (`HomePage`, `QuizPage`, `ResultPage`, `ChatPage` all
+render a "coming soon" card): these need backend work first.
+Specifically, the backend currently exposes:
+- `GET /exam/templates` (list, used by `TestsPage`) and `POST
+  /exam/attempts` (start/resume) + `POST /exam/attempts/:id/answer` -- but no
+  way to *list* topics/license categories from a non-admin token yet (only
+  needed for filter dropdowns, not for the basic Practice/Exam list). The
+  admin-panel equivalents exist under `/api/v1/admin/*` but require an admin
+  role.
 - No chat/explanation endpoint exists for the AI-tutor screen at all.
 
 Do not wire a screen to admin endpoints as a workaround -- add the missing
