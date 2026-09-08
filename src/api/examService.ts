@@ -132,11 +132,12 @@ export async function submitAnswer(
 //
 //   GET /exam/home → HomeSummary
 //
-// One round trip for everything the Home tab shows. Each field is null
-// rather than a zero/empty placeholder when there's nothing to show yet
-// (no in-progress attempt, no daily challenge scheduled today, not enough
-// answered questions for a meaningful weak-topic or readiness signal) --
-// render that card's empty state, not a "0%" or blank title.
+// One round trip for everything the Home tab shows. resume_attempt/
+// daily_challenge/readiness are null when there's nothing to show yet (no
+// in-progress attempt, no daily challenge scheduled today, no active
+// question bank to compute coverage against); weak_topics is simply []
+// until the user has answered something -- render that section's empty
+// state, not a zero-filled placeholder.
 
 export interface ResumeAttempt {
   id: string
@@ -153,11 +154,21 @@ export interface WeakTopic {
   mistake_count: number
 }
 
+/** readiness is a coverage score -- distinct questions ever answered out
+ *  of the whole active bank -- not a rolling accuracy score. Being ready
+ *  for the exam is more about having seen the material than one
+ *  session's hit rate. */
+export interface Readiness {
+  percent: number
+  answered_count: number
+  total_count: number
+}
+
 export interface HomeSummary {
   resume_attempt: ResumeAttempt | null
   daily_challenge: TemplateSummary | null
-  weak_topic: WeakTopic | null
-  readiness_percent: number | null
+  weak_topics: WeakTopic[]
+  readiness: Readiness | null
 }
 
 export async function getHomeSummary(): Promise<HomeSummary> {
