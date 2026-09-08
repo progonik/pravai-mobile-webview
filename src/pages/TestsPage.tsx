@@ -8,8 +8,8 @@ import { useT } from '../context/LocaleContext'
 
 function TypeRowSkeleton() {
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 flex items-center gap-3">
-      <Skeleton className="w-9 h-9 rounded-xl shrink-0" />
+    <div className="p-4 flex items-center gap-3">
+      <Skeleton className="tile-accent w-9 h-9 rounded-xl shrink-0" />
       <Skeleton className="h-4 w-1/2 rounded-full" />
     </div>
   )
@@ -69,7 +69,7 @@ export function TestsPage() {
         </div>
       )}
 
-      <div className="flex flex-col gap-2.5">
+      <div className="dashed-list rounded-2xl border border-border bg-card overflow-hidden">
         {isPending ? (
           <>
             <TypeRowSkeleton />
@@ -81,9 +81,9 @@ export function TestsPage() {
             <button
               key={qt.id}
               onClick={() => openType(qt.code)}
-              className="press-row rounded-2xl border border-border bg-card p-4 flex items-center gap-3 text-left"
+              className="press-row w-full p-4 flex items-center gap-3 text-left"
             >
-              <div className="w-9 h-9 rounded-xl bg-input-background flex items-center justify-center text-muted-foreground shrink-0">
+              <div className="tile-accent w-9 h-9 rounded-xl bg-input-background flex items-center justify-center text-muted-foreground shrink-0">
                 <ListChecks size={16} />
               </div>
               <span className="flex-1 text-[15px] font-bold text-foreground">{qt.name}</span>

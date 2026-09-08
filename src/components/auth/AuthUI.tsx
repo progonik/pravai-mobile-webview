@@ -57,9 +57,9 @@ export function LanguageSelector() {
 }
 
 /**
- * The wordmark. A soft mustard tile with a gentle brand-tinted glow, sitting
- * on glass like everything else in the sign-in flow, rather than the poster
- * pass's flat dark tile with a hard offset shadow.
+ * The wordmark. A soft route-green tile with a gentle brand-tinted glow,
+ * sitting on glass like everything else in the sign-in flow, rather than the
+ * poster pass's flat dark tile with a hard offset shadow.
  */
 export function LogoMark() {
   return (
@@ -67,7 +67,7 @@ export function LogoMark() {
       <div
         className="w-10 h-10 rounded-2xl flex items-center justify-center"
         style={{
-          background: 'linear-gradient(135deg, #FFD873 0%, #FFC531 100%)',
+          background: 'linear-gradient(135deg, #4CD98F 0%, #2FB673 100%)',
           boxShadow: 'var(--shadow-brand)',
         }}
       >

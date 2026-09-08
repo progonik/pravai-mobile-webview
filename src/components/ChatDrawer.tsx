@@ -99,14 +99,14 @@ export function ChatDrawer({ open, onClose, activeId }: {
                     c.id === activeId ? 'bg-primary/10' : ''
                   }`}
                 >
-                  <div className="w-8 h-8 rounded-xl bg-input-background flex items-center justify-center text-muted-foreground shrink-0">
+                  <div className="tile-accent w-8 h-8 rounded-xl bg-input-background flex items-center justify-center text-muted-foreground shrink-0">
                     <MessageCircle size={15} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={`text-[13.5px] font-medium truncate ${c.id === activeId ? 'text-primary' : 'text-foreground'}`}>
                       {c.title || t('chat.untitled')}
                     </p>
-                    <p className="text-[11px] text-muted-foreground">{formatWhen(c.updated_at, t)}</p>
+                    <p className="font-mono text-[10.5px] text-muted-foreground">{formatWhen(c.updated_at, t)}</p>
                   </div>
                 </button>
               ))}

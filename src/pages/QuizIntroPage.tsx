@@ -54,7 +54,7 @@ export function QuizIntroPage() {
             <>
               <div
                 className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
-                style={{ background: 'linear-gradient(135deg, #FFD873 0%, #FFC531 100%)', boxShadow: 'var(--shadow-brand)' }}
+                style={{ background: 'linear-gradient(135deg, #4CD98F 0%, #2FB673 100%)', boxShadow: 'var(--shadow-brand)' }}
               >
                 <ShieldAlert size={28} className="text-primary-foreground" />
               </div>

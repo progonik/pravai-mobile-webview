@@ -14,9 +14,9 @@ function MenuRow({ icon, label, value, onClick }: {
   return (
     <button
       onClick={onClick}
-      className="press-row w-full flex items-center gap-3 px-4 py-3.5 text-left border-b border-hairline last:border-0"
+      className="press-row w-full flex items-center gap-3 px-4 py-3.5 text-left"
     >
-      <div className="w-9 h-9 rounded-xl bg-input-background flex items-center justify-center text-muted-foreground shrink-0">
+      <div className="tile-accent w-9 h-9 rounded-xl bg-input-background flex items-center justify-center text-muted-foreground shrink-0">
         {icon}
       </div>
       <span className="flex-1 text-[14px] font-medium text-foreground">{label}</span>
@@ -57,7 +57,7 @@ export function ProfilePage() {
       </button>
 
       {/* Menu */}
-      <div className="mt-3 rounded-2xl border border-border bg-card overflow-hidden">
+      <div className="dashed-list mt-3 rounded-2xl border border-border bg-card overflow-hidden">
         <MenuRow
           icon={<User size={17} />}
           label={t('profile.myInfo')}

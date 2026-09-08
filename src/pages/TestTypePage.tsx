@@ -42,7 +42,7 @@ function TemplateCard({ template }: { template: TemplateSummary }) {
         <p className="text-[15px] font-bold text-foreground leading-tight flex-1">{template.title}</p>
         <div className="flex items-center gap-2 shrink-0">
           {template.is_official_ticket && (
-            <span className="flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 rounded-full px-2 py-1">
+            <span className="font-mono flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 rounded-full px-2 py-1 tracking-wide">
               <Shield size={11} />
               {t('tests.officialTicket')}
             </span>

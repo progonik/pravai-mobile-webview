@@ -7,61 +7,68 @@
    the opt-in alternative, not the other way around. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ── Design tokens (PravAI, Telegram/iMe-style floating glass) ─────────────
+/* ── Design tokens (PravAI, road-sign material on a Telegram/iMe-style
+   floating glass shell) ─────────────────────────────────────────────────
    Both palettes share one structure: opaque, flat content surfaces (list
    rows, cards, form fields) versus a separate "chrome" material --
    translucent, blurred, rounded-full pills -- reserved for navigation (tab
    bar, header buttons) and overlays (sheets). Chrome only reads as glass
    because there's opaque canvas-colour content behind it to blur; that's why
    both palettes keep a strong canvas/card contrast rather than the softer
-   steps a typical light UI uses. PravAI's mustard accent is the one thing
-   carried through every pass this app has been through, and holds its hue in
-   both palettes. */
+   steps a typical light UI uses.
+
+   The accent is a route-sign green rather than an arbitrary brand colour --
+   traffic semantics used for real, the way this app's own subject uses
+   them: green reads "go"/primary action, amber is reserved for genuine
+   warnings (a wrong-answer streak, an expiring code), red for actual
+   errors/prohibition. The canvas is a cool asphalt charcoal in dark mode
+   and a warm concrete paper in light, rather than flat black/white. */
 :root {
-  --background: #FFFFFF;
-  --foreground: #0B0B0C;
-  /* A hair off pure white so it reads as a distinct resting surface -- flat
-     and opaque on purpose, not glass. */
-  --card: #F7F7F8;
-  --card-foreground: #0B0B0C;
-  --primary: #FFC531;
-  --primary-foreground: #241A00;
-  --primary-hover: #F0B61E;
-  --secondary: rgba(0, 0, 0, 0.04);
-  --secondary-foreground: #0B0B0C;
-  --muted: rgba(0, 0, 0, 0.04);
-  --muted-foreground: #6B6B70;
-  --accent: rgba(255, 197, 49, 0.14);
-  --accent-foreground: #7A5A00;
-  --destructive: #FF3B30;
+  --background: #F5F2EA;
+  --foreground: #14171C;
+  /* A step down toward the ink, not toward white -- a warm neutral, so it
+     reads as a distinct resting surface, flat and opaque on purpose. */
+  --card: #EBE7DC;
+  --card-foreground: #14171C;
+  --primary: #1C8354;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #176D46;
+  --secondary: rgba(20, 23, 28, 0.045);
+  --secondary-foreground: #14171C;
+  --muted: rgba(20, 23, 28, 0.045);
+  --muted-foreground: #6B6F73;
+  --accent: rgba(28, 131, 84, 0.12);
+  --accent-foreground: #145F3C;
+  --destructive: #E5453D;
   --destructive-foreground: #FFFFFF;
   --success: #22A55A;
   --success-foreground: #1F8A4C;
-  --warning: #FFC531;
-  --border: rgba(0, 0, 0, 0.08);
-  --input-background: rgba(0, 0, 0, 0.045);
-  --ring: #FFC531;
+  --warning: #C97A0A;
+  --warning-foreground: #FFFFFF;
+  --border: rgba(20, 23, 28, 0.08);
+  --input-background: rgba(20, 23, 28, 0.045);
+  --ring: #1C8354;
 
-  --edge: rgba(0, 0, 0, 0.08);
-  --hairline: rgba(0, 0, 0, 0.06);
-  --surface-raised: rgba(0, 0, 0, 0.04);
-  --surface-sunken: rgba(0, 0, 0, 0.035);
+  --edge: rgba(20, 23, 28, 0.08);
+  --hairline: rgba(20, 23, 28, 0.06);
+  --surface-raised: rgba(20, 23, 28, 0.04);
+  --surface-sunken: rgba(20, 23, 28, 0.035);
 
   /* The floating-pill material: tab bar, header back/action buttons, bottom
      sheets. Always paired with `.glass` (backdrop-filter) at the call site --
      the colour alone is just a flat tint, the blur is what reads as glass. */
-  --chrome: rgba(255, 255, 255, 0.72);
-  --chrome-foreground: #0B0B0C;
-  --chrome-border: rgba(0, 0, 0, 0.08);
+  --chrome: rgba(255, 252, 244, 0.72);
+  --chrome-foreground: #14171C;
+  --chrome-border: rgba(20, 23, 28, 0.08);
 
   /* Soft, ambient, never a hard offset — a glass panel floats on blur and
      diffuse shadow, not a cast poster-style edge. */
   --shadow-glass: 0 8px 30px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(255, 255, 255, 0.6) inset;
   --shadow-raised: 0 2px 10px rgba(0, 0, 0, 0.08);
   --shadow-float: 0 20px 50px -12px rgba(0, 0, 0, 0.18);
-  /* A tinted glow under the mustard CTA — a neutral shadow under a
+  /* A tinted glow under the route-green CTA — a neutral shadow under a
      saturated fill reads as dirt rather than depth. */
-  --shadow-brand: 0 8px 20px rgba(255, 197, 49, 0.35), 0 2px 6px rgba(255, 197, 49, 0.2);
+  --shadow-brand: 0 8px 20px rgba(28, 131, 84, 0.35), 0 2px 6px rgba(28, 131, 84, 0.2);
   --shadow-success: 0 8px 20px rgba(34, 165, 90, 0.2);
   --shadow-chrome: 0 8px 24px rgba(0, 0, 0, 0.14);
 
@@ -99,47 +106,48 @@
 }
 
 /* ── Dark palette (the app's default -- see theme.ts) ──────────────────────
-   Same structure, printed at night: canvas drops to near-black, content
-   cards to a flat dark grey a step above it, and chrome flips from
-   translucent white to translucent near-black. The accent holds its hue --
-   it's the one colour with brand identity, and it needs to read the same in
-   either theme. */
+   Same structure, printed at night: canvas drops to a cool asphalt charcoal
+   (not flat black), content cards to a flat dark step above it, and chrome
+   flips from translucent warm-white to translucent charcoal. The route-green
+   accent holds its hue -- it's the one colour with brand identity, and it
+   needs to read the same in either theme. */
 html.dark {
-  --background: #000000;
-  --foreground: #F2F2F4;
-  --card: #1C1C1E;
-  --card-foreground: #F2F2F4;
-  --primary: #FFC531;
-  --primary-foreground: #241A00;
-  --primary-hover: #FFCF52;
+  --background: #0E1116;
+  --foreground: #F4F1E8;
+  --card: #171B22;
+  --card-foreground: #F4F1E8;
+  --primary: #2FB673;
+  --primary-foreground: #06170F;
+  --primary-hover: #37C87F;
   --secondary: rgba(255, 255, 255, 0.06);
-  --secondary-foreground: #F2F2F4;
+  --secondary-foreground: #F4F1E8;
   --muted: rgba(255, 255, 255, 0.06);
-  --muted-foreground: #8E8E93;
-  --accent: rgba(255, 197, 49, 0.14);
-  --accent-foreground: #FFD873;
-  --destructive: #FF453A;
+  --muted-foreground: #8A93A0;
+  --accent: rgba(47, 182, 115, 0.14);
+  --accent-foreground: #7FE3AE;
+  --destructive: #FF5A52;
   --destructive-foreground: #FFFFFF;
   --success: #32D74B;
   --success-foreground: #32D74B;
-  --warning: #FFC531;
+  --warning: #FFB020;
+  --warning-foreground: #241800;
   --border: rgba(255, 255, 255, 0.09);
   --input-background: rgba(255, 255, 255, 0.07);
-  --ring: #FFC531;
+  --ring: #2FB673;
 
   --edge: rgba(255, 255, 255, 0.12);
   --hairline: rgba(255, 255, 255, 0.07);
   --surface-raised: rgba(255, 255, 255, 0.07);
   --surface-sunken: rgba(255, 255, 255, 0.04);
 
-  --chrome: rgba(40, 40, 44, 0.72);
-  --chrome-foreground: #F2F2F4;
+  --chrome: rgba(23, 27, 34, 0.72);
+  --chrome-foreground: #F4F1E8;
   --chrome-border: rgba(255, 255, 255, 0.1);
 
   --shadow-glass: 0 8px 30px rgba(0, 0, 0, 0.45), 0 1px 1px rgba(255, 255, 255, 0.04) inset;
   --shadow-raised: 0 2px 10px rgba(0, 0, 0, 0.4);
   --shadow-float: 0 20px 50px -12px rgba(0, 0, 0, 0.6);
-  --shadow-brand: 0 8px 20px rgba(255, 197, 49, 0.28), 0 2px 6px rgba(0, 0, 0, 0.4);
+  --shadow-brand: 0 8px 20px rgba(47, 182, 115, 0.28), 0 2px 6px rgba(0, 0, 0, 0.4);
   --shadow-success: 0 8px 20px rgba(50, 215, 75, 0.2);
   --shadow-chrome: 0 8px 24px rgba(0, 0, 0, 0.45);
 
@@ -160,6 +168,9 @@ html.dark {
      existing `font-display` classNames from the poster pass still work. */
   --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
   --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  /* Borrowed for ticket/category codes -- license categories, question
+     counts, timers -- a small nod to the exam ticket ("bilet") itself. */
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -178,6 +189,7 @@ html.dark {
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-border: var(--border);
   --color-edge: var(--edge);
   --color-hairline: var(--hairline);
@@ -354,13 +366,27 @@ img {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(120% 40% at 50% -10%, rgba(255, 197, 49, 0.06) 0%, rgba(255, 197, 49, 0) 70%),
-    radial-gradient(70% 30% at 100% 0%, rgba(255, 197, 49, 0.03) 0%, rgba(255, 197, 49, 0) 65%);
+    radial-gradient(120% 40% at 50% -10%, rgba(28, 131, 84, 0.06) 0%, rgba(28, 131, 84, 0) 70%),
+    radial-gradient(70% 30% at 100% 0%, rgba(28, 131, 84, 0.03) 0%, rgba(28, 131, 84, 0) 65%);
 }
 html.dark .bg-decor {
   background:
-    radial-gradient(120% 40% at 50% -10%, rgba(255, 197, 49, 0.1) 0%, rgba(255, 197, 49, 0) 70%),
-    radial-gradient(70% 30% at 100% 0%, rgba(255, 197, 49, 0.05) 0%, rgba(255, 197, 49, 0) 65%);
+    radial-gradient(120% 40% at 50% -10%, rgba(47, 182, 115, 0.1) 0%, rgba(47, 182, 115, 0) 70%),
+    radial-gradient(70% 30% at 100% 0%, rgba(47, 182, 115, 0.05) 0%, rgba(47, 182, 115, 0) 65%);
+}
+
+/* ── Road-sign motif ───────────────────────────────────────────────────────
+   A dashed lane-marking stands in for a plain hairline between list rows,
+   and a category tile gets a thin coloured top edge like a sign's border --
+   both call out the driving-exam subject instead of a generic flat divider. */
+.dashed-list > * {
+  border-bottom: 2px dashed var(--hairline);
+}
+.dashed-list > *:last-child {
+  border-bottom: none;
+}
+.tile-accent {
+  border-top: 2px solid var(--tile-accent, var(--primary));
 }
 
 /* ── Home entrance ─────────────────────────────────────────────────────────

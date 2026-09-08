@@ -134,7 +134,7 @@ export function QuizPage() {
         title={template?.title ?? ''}
         right={
           attempt && (
-            <span className="numeric text-[13px] font-semibold text-muted-foreground shrink-0">
+            <span className="font-mono numeric text-[13px] font-semibold text-muted-foreground shrink-0">
               {attempt.answered_count}/{attempt.total_planned}
             </span>
           )

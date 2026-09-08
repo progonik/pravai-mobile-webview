@@ -47,10 +47,10 @@ export function MyInfoPage() {
       <PageHeader title={t('profile.myInfo')} />
 
       <div className="flex-1 overflow-y-auto px-4 pb-4" style={{ paddingTop: 'calc(var(--safe-top) + 50px)' }}>
-        <div className="rounded-2xl border border-border bg-card overflow-hidden">
+        <div className="dashed-list rounded-2xl border border-border bg-card overflow-hidden">
           {rows.map((row) => (
-            <div key={row.label} className="flex items-center gap-3 px-4 py-3.5 border-b border-hairline last:border-0">
-              <div className="w-9 h-9 rounded-xl bg-input-background flex items-center justify-center text-muted-foreground shrink-0">
+            <div key={row.label} className="flex items-center gap-3 px-4 py-3.5">
+              <div className="tile-accent w-9 h-9 rounded-xl bg-input-background flex items-center justify-center text-muted-foreground shrink-0">
                 {row.icon}
               </div>
               <div className="flex-1 min-w-0">
@@ -65,7 +65,7 @@ export function MyInfoPage() {
           onClick={() => setPickingLang(true)}
           className="press-row mt-3 w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl border border-border bg-card text-left"
         >
-          <div className="w-9 h-9 rounded-xl bg-input-background flex items-center justify-center text-muted-foreground shrink-0">
+          <div className="tile-accent w-9 h-9 rounded-xl bg-input-background flex items-center justify-center text-muted-foreground shrink-0">
             <span className="text-[15px] leading-none">🌐</span>
           </div>
           <div className="flex-1 min-w-0">
@@ -81,7 +81,7 @@ export function MyInfoPage() {
           onClick={() => setPickingMode(true)}
           className="press-row mt-2 w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl border border-border bg-card text-left"
         >
-          <div className="w-9 h-9 rounded-xl bg-input-background flex items-center justify-center text-muted-foreground shrink-0">
+          <div className="tile-accent w-9 h-9 rounded-xl bg-input-background flex items-center justify-center text-muted-foreground shrink-0">
             {mode === 'dark' ? <Moon size={16} /> : <Sun size={16} />}
           </div>
           <div className="flex-1 min-w-0">

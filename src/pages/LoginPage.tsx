@@ -79,7 +79,7 @@ function PhoneStep({ onNext }: { onNext: (e164: string) => void }) {
             wordmark uses, so sign-in is the first screen of the product itself. */}
         <div
           className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 enter-1"
-          style={{ background: 'linear-gradient(135deg, #FFD873 0%, #FFC531 100%)', boxShadow: 'var(--shadow-brand)' }}
+          style={{ background: 'linear-gradient(135deg, #4CD98F 0%, #2FB673 100%)', boxShadow: 'var(--shadow-brand)' }}
         >
           <Phone size={28} className="text-primary-foreground" />
         </div>
@@ -208,7 +208,7 @@ function OtpStep({ phone, onVerify, onBack, onResend }: {
         <div className="w-full my-auto pb-[16%] [@media(max-height:620px)]:pb-0">
         <div
           className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
-          style={{ background: 'linear-gradient(135deg, #FFD873 0%, #FFC531 100%)', boxShadow: 'var(--shadow-brand)' }}
+          style={{ background: 'linear-gradient(135deg, #4CD98F 0%, #2FB673 100%)', boxShadow: 'var(--shadow-brand)' }}
         >
           <ShieldCheck size={28} className="text-primary-foreground" />
         </div>
@@ -298,7 +298,7 @@ function RegisterStep({ phone, onRegister, onBack }: {
         <div className="w-full my-auto pb-[16%] [@media(max-height:620px)]:pb-0">
         <div
           className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
-          style={{ background: 'linear-gradient(135deg, #FFD873 0%, #FFC531 100%)', boxShadow: 'var(--shadow-brand)' }}
+          style={{ background: 'linear-gradient(135deg, #4CD98F 0%, #2FB673 100%)', boxShadow: 'var(--shadow-brand)' }}
         >
           <UserPlus size={28} className="text-primary-foreground" />
         </div>
