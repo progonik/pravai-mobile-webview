@@ -101,6 +101,22 @@ export function QuizPage() {
     }
   }
 
+  const handleWhy = () => {
+    if (!question || !feedback) return
+    const correctOption = question.options.find((o) => o.id === feedback.correctOptionId)
+    const selectedOption = question.options.find((o) => o.id === feedback.selectedOptionId)
+    navigate('/chat', {
+      state: {
+        explain: {
+          questionBody: question.body,
+          imageUrl: question.image_urls[0] ?? null,
+          userAnswerText: selectedOption?.body ?? t('quiz.skippedAnswer'),
+          correctAnswerText: correctOption?.body ?? '',
+        },
+      },
+    })
+  }
+
   const handleNext = () => {
     if (pendingNext === undefined || !attempt) return
     if (pendingNext === null) {
@@ -180,9 +196,20 @@ export function QuizPage() {
 
             {feedback && (
               <div className="rounded-2xl border border-border bg-card p-4 mt-4">
-                <p className={`text-[13px] font-bold mb-1 ${feedback.isCorrect ? 'text-success' : 'text-destructive'}`}>
-                  {feedback.isCorrect ? t('quiz.correct') : t('quiz.incorrect')}
-                </p>
+                <div className="flex items-center justify-between gap-3 mb-1">
+                  <p className={`text-[13px] font-bold ${feedback.isCorrect ? 'text-success' : 'text-destructive'}`}>
+                    {feedback.isCorrect ? t('quiz.correct') : t('quiz.incorrect')}
+                  </p>
+                  {/* Practice only: exam-mode mistakes already cost extra
+                      questions as their own consequence, and "why" there
+                      would just repeat what quiz.intro.examRules already
+                      explained. */}
+                  {!feedback.isCorrect && attempt?.mode === 'practice' && (
+                    <button onClick={handleWhy} className="press text-[12px] font-bold text-primary-hover shrink-0">
+                      {t('quiz.why')}
+                    </button>
+                  )}
+                </div>
                 <p className="text-[13px] text-muted-foreground leading-relaxed">{feedback.explanation}</p>
               </div>
             )}

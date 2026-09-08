@@ -54,6 +54,8 @@ export const ru: Record<TranslationKey, string> = {
   'quiz.skip': 'Пропустить',
   'quiz.next': 'Далее',
   'quiz.finish': 'Завершить',
+  'quiz.why': 'Почему?',
+  'quiz.skippedAnswer': 'Ответ не дан (пропущено)',
 
   'result.noData': 'Этот результат больше недоступен.',
   'result.backToTests': 'Назад к тестам',
@@ -65,8 +67,15 @@ export const ru: Record<TranslationKey, string> = {
   'result.answered': 'Отвечено',
   'result.done': 'Готово',
 
-  'chat.placeholderTitle': 'AI Чат скоро появится',
-  'chat.placeholderBody': 'Спросите AI-репетитора о том, что вы сделали неправильно, сразу после теста.',
+  'chat.placeholderTitle': 'Задайте вопрос',
+  'chat.placeholderBody': 'Спросите AI-репетитора о правилах дорожного движения или подготовке к экзамену.',
+  'chat.inputPlaceholder': 'Введите сообщение...',
+  'chat.sendFailed': 'Не удалось отправить сообщение. Попробуйте ещё раз.',
+  'chat.explainIntro': 'Я ответил неправильно на этот вопрос теста. Объясните, почему:',
+  'chat.explainQuestion': 'Вопрос: {question}',
+  'chat.explainMyAnswer': 'Мой ответ: {answer}',
+  'chat.explainCorrectAnswer': 'Правильный ответ: {answer}',
+  'chat.explainInstruction': 'Объясните, почему мой ответ неверен и почему правильный ответ верен. Указывайте правильный ответ полным текстом, а не буквой вроде "A", "B" или "C".',
 
   'profile.noName': 'Добавьте имя',
   'profile.myInfo': 'Мои данные',

@@ -54,6 +54,8 @@ export const uz: Record<TranslationKey, string> = {
   'quiz.skip': "O'tkazib yuborish",
   'quiz.next': 'Keyingi',
   'quiz.finish': 'Yakunlash',
+  'quiz.why': 'Nega?',
+  'quiz.skippedAnswer': "Javob berilmadi (o'tkazib yuborildi)",
 
   'result.noData': "Bu natija endi mavjud emas.",
   'result.backToTests': 'Testlarga qaytish',
@@ -65,8 +67,15 @@ export const uz: Record<TranslationKey, string> = {
   'result.answered': 'Javob berildi',
   'result.done': 'Tayyor',
 
-  'chat.placeholderTitle': 'AI Chat tez orada',
-  'chat.placeholderBody': "Testdan so'ng xato qilgan savollaringiz haqida AI o'qituvchidan so'rang.",
+  'chat.placeholderTitle': "Savolingizni yozing",
+  'chat.placeholderBody': "Yo'l harakati qoidalari yoki imtihonga tayyorgarlik haqida AI o'qituvchidan so'rang.",
+  'chat.inputPlaceholder': 'Xabar yozing...',
+  'chat.sendFailed': "Xabar yuborilmadi. Qayta urinib ko'ring.",
+  'chat.explainIntro': "Men bu amaliyot testida xato qildim. Nega noto'g'ri ekanini tushuntirib bering:",
+  'chat.explainQuestion': 'Savol: {question}',
+  'chat.explainMyAnswer': 'Mening javobim: {answer}',
+  'chat.explainCorrectAnswer': "To'g'ri javob: {answer}",
+  'chat.explainInstruction': "Nega mening javobim noto'g'ri ekanini va to'g'ri javob nima uchun to'g'ri ekanini tushuntirib bering. To'g'ri javobni to'liq matn sifatida ayting, \"A\", \"B\" yoki \"C\" kabi harflar bilan emas.",
 
   'profile.noName': "Ismingizni qo'shing",
   'profile.myInfo': "Ma'lumotlarim",

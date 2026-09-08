@@ -52,6 +52,8 @@ export const en = {
   'quiz.skip': 'Skip',
   'quiz.next': 'Next',
   'quiz.finish': 'Finish',
+  'quiz.why': 'Why?',
+  'quiz.skippedAnswer': 'No answer (skipped)',
 
   'result.noData': "This result isn't available anymore.",
   'result.backToTests': 'Back to tests',
@@ -63,8 +65,15 @@ export const en = {
   'result.answered': 'Answered',
   'result.done': 'Done',
 
-  'chat.placeholderTitle': 'AI Chat is coming soon',
-  'chat.placeholderBody': "Ask the AI tutor about anything you got wrong, right after a test.",
+  'chat.placeholderTitle': 'Ask a question',
+  'chat.placeholderBody': 'Ask the AI tutor about traffic rules or exam preparation.',
+  'chat.inputPlaceholder': 'Type a message...',
+  'chat.sendFailed': "Couldn't send the message. Please try again.",
+  'chat.explainIntro': 'I got this practice question wrong. Please explain why:',
+  'chat.explainQuestion': 'Question: {question}',
+  'chat.explainMyAnswer': 'My answer: {answer}',
+  'chat.explainCorrectAnswer': 'Correct answer: {answer}',
+  'chat.explainInstruction': 'Explain why my answer was wrong and why the correct answer is right. Refer to the correct answer by its full text, not by a letter like "A", "B", or "C".',
 
   'profile.noName': 'Add your name',
   'profile.myInfo': 'My info',
