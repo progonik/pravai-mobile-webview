@@ -74,6 +74,8 @@ export const uz: Record<TranslationKey, string> = {
   'chat.loading': 'Yuklanmoqda...',
   'chat.loadFailed': "Suhbatlarni yuklab bo'lmadi.",
   'chat.untitled': 'Suhbat',
+  'chat.newChat': 'Yangi suhbat',
+  'chat.recents': "So'nggilar",
   'chat.justNow': 'hozirgina',
   'chat.minutesAgo': '{n} daqiqa oldin',
   'chat.hoursAgo': '{n} soat oldin',

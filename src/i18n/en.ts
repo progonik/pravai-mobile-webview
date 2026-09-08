@@ -72,6 +72,8 @@ export const en = {
   'chat.loading': 'Loading...',
   'chat.loadFailed': "Couldn't load your conversations.",
   'chat.untitled': 'Conversation',
+  'chat.newChat': 'New chat',
+  'chat.recents': 'Recents',
   'chat.justNow': 'just now',
   'chat.minutesAgo': '{n}m ago',
   'chat.hoursAgo': '{n}h ago',

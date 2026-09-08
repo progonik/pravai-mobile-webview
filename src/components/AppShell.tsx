@@ -10,13 +10,18 @@ import { TestTypePage } from '../pages/TestTypePage'
 import { QuizIntroPage } from '../pages/QuizIntroPage'
 import { QuizPage } from '../pages/QuizPage'
 import { ResultPage } from '../pages/ResultPage'
-import { ChatListPage } from '../pages/ChatListPage'
 import { ChatPage } from '../pages/ChatPage'
 import { ProfilePage } from '../pages/ProfilePage'
 import { MyInfoPage } from '../pages/MyInfoPage'
 
 /** Routes where the bottom tabbar stays visible */
 const TAB_ROUTES = ['/home', '/tests', '/chat', '/profile']
+
+/** The chat tab is a composer with a drawer, not a list-then-detail push --
+ *  every /chat/:id is still "the chat tab", not a pushed sub-screen. */
+function isTabScreen(pathname: string): boolean {
+  return TAB_ROUTES.includes(pathname) || pathname === '/' || pathname.startsWith('/chat/')
+}
 
 /**
  * Scroll position per route, so returning to a tab lands where the user left
@@ -62,7 +67,7 @@ export function AppShell() {
 
   // Dropped while a bottom sheet is up — the sheet's backdrop covers only the
   // routed content, so the tabs would otherwise sit lit on top of it.
-  const showTabbar = (TAB_ROUTES.includes(pathname) || pathname === '/') && !hasOverlay
+  const showTabbar = isTabScreen(pathname) && !hasOverlay
 
   return (
     <div className="flex flex-col h-app bg-background relative overflow-hidden">
@@ -76,7 +81,7 @@ export function AppShell() {
       <div
         key={pathname}
         className={`relative flex-1 min-h-0 overflow-hidden flex flex-col ${
-          TAB_ROUTES.includes(pathname) || pathname === '/' ? 'screen-tab' : 'screen-stack'
+          isTabScreen(pathname) ? 'screen-tab' : 'screen-stack'
         }`}
       >
         <Routes>
@@ -87,7 +92,7 @@ export function AppShell() {
           <Route path="/quiz/:templateId/intro" element={<QuizIntroPage />} />
           <Route path="/quiz/:templateId" element={<QuizPage />} />
           <Route path="/result" element={<ResultPage />} />
-          <Route path="/chat" element={<ChatListPage />} />
+          <Route path="/chat" element={<ChatPage />} />
           <Route path="/chat/:conversationId" element={<ChatPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/info" element={<MyInfoPage />} />

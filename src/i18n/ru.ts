@@ -74,6 +74,8 @@ export const ru: Record<TranslationKey, string> = {
   'chat.loading': 'Загрузка...',
   'chat.loadFailed': 'Не удалось загрузить переписки.',
   'chat.untitled': 'Переписка',
+  'chat.newChat': 'Новый чат',
+  'chat.recents': 'Недавние',
   'chat.justNow': 'только что',
   'chat.minutesAgo': '{n} мин назад',
   'chat.hoursAgo': '{n} ч назад',

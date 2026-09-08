@@ -27,11 +27,14 @@ export function AppTabbar() {
   const { pathname } = useLocation()
   const t = useT()
 
-  const openTab = (path: string, active: boolean) => {
-    // Re-tapping the active tab scrolls its page back to the top — the
-    // standard native tab-bar gesture. Only one page is mounted, so the first
-    // vertical scroller in the document is that page's.
-    if (active) {
+  const openTab = (path: string, exact: boolean) => {
+    // Re-tapping the tab you're already exactly on scrolls its page back to
+    // the top — the standard native tab-bar gesture. Only one page is
+    // mounted, so the first vertical scroller in the document is that page's.
+    // Tapping Chat while inside a specific conversation (/chat/:id) isn't
+    // "exact" even though the tab is highlighted — it should back out to the
+    // fresh composer instead, same as tapping the chat icon in ChatGPT.
+    if (exact) {
       document.querySelector('.overflow-y-auto')?.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
@@ -46,12 +49,13 @@ export function AppTabbar() {
       style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 14px)', height: 62 }}
     >
       {tabs.map(({ path, labelKey, Icon }) => {
-        const isActive = pathname === path || (pathname === '/' && path === '/home')
+        const isExact = pathname === path || (pathname === '/' && path === '/home')
+        const isActive = isExact || (path === '/chat' && pathname.startsWith('/chat/'))
 
         return (
           <button
             key={path}
-            onClick={() => openTab(path, isActive)}
+            onClick={() => openTab(path, isExact)}
             aria-current={isActive ? 'page' : undefined}
             className="press-tab flex-1 h-full flex flex-col items-center justify-center gap-0.5"
           >

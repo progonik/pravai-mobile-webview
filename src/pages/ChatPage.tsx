@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
-import { Send } from 'lucide-react'
+import { Menu, Send, SquarePen } from 'lucide-react'
 import Markdown from 'react-markdown'
 import { listMessages, streamChat } from '../api/aiChatService'
 import { PageHeader } from '../components/PageHeader'
+import { ChatDrawer } from '../components/ChatDrawer'
 import { useT, type Translate } from '../context/LocaleContext'
 
 interface UIMessage {
@@ -61,18 +62,20 @@ const markdownComponents = {
 }
 
 /**
- * One conversation -- either resuming an existing one (/chat/:conversationId,
- * history loaded on mount) or starting a fresh one (/chat/new, optionally
- * auto-sending QuizPage's "why was this wrong" prompt). Always has a back
- * button (PageHeader's default navigate(-1)): wherever it was opened from --
- * the chat list, or a quiz question -- that's exactly where "back" should
- * return to.
+ * The chat tab is a ChatGPT-style composer, not a list you land on first:
+ * the conversation list lives in ChatDrawer, opened via the hamburger.
+ * The one exception is the "why was this wrong" flow from QuizPage, which
+ * pushes this page with explain state -- there "back" should return to the
+ * quiz question, so that case keeps the old back-button header instead of
+ * the hamburger/new-chat one.
  */
 export function ChatPage() {
   const t = useT()
   const location = useLocation()
+  const navigate = useNavigate()
   const { conversationId: routeId } = useParams<{ conversationId: string }>()
   const isNew = !routeId || routeId === 'new'
+  const cameFromQuiz = isExplainState(location.state)
   const queryClient = useQueryClient()
 
   const [messages, setMessages] = useState<UIMessage[]>([])
@@ -81,6 +84,7 @@ export function ChatPage() {
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const autoSentRef = useRef(false)
 
@@ -165,7 +169,32 @@ export function ChatPage() {
 
   return (
     <div className="relative flex flex-col h-full bg-background">
-      <PageHeader title={t('tab.chat')} />
+      {cameFromQuiz ? (
+        <PageHeader title={t('tab.chat')} />
+      ) : (
+        <div
+          className="absolute top-0 left-0 right-0 z-30 flex items-center gap-3 px-3.5"
+          style={{ paddingTop: 'calc(var(--safe-top) - 4px)' }}
+        >
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="glass press w-10 h-10 rounded-full bg-chrome border border-chrome-border shadow-chrome flex items-center justify-center text-chrome-foreground shrink-0"
+          >
+            <Menu size={19} />
+          </button>
+          <div className="flex-1 min-w-0 text-center">
+            <p className="font-display text-[15px] font-semibold text-foreground leading-tight truncate">{t('tab.chat')}</p>
+          </div>
+          <button
+            onClick={() => navigate('/chat')}
+            className="glass press w-10 h-10 rounded-full bg-chrome border border-chrome-border shadow-chrome flex items-center justify-center text-chrome-foreground shrink-0"
+          >
+            <SquarePen size={18} />
+          </button>
+        </div>
+      )}
+
+      <ChatDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} activeId={conversationId} />
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4" style={{ paddingTop: 'calc(var(--safe-top) + 54px)' }}>
         {loadingHistory ? (
@@ -209,7 +238,14 @@ export function ChatPage() {
       <form
         onSubmit={handleSubmit}
         className="shrink-0 flex items-center gap-2 px-4 pt-3"
-        style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 22px)' }}
+        style={{
+          // The floating tabbar sits at safe-bottom+14px and is 62px tall --
+          // clear it with some room, unless this is the pushed
+          // explain-flow screen, which has no tabbar underneath it.
+          paddingBottom: cameFromQuiz
+            ? 'max(env(safe-area-inset-bottom), 22px)'
+            : 'calc(env(safe-area-inset-bottom, 0px) + 90px)',
+        }}
       >
         <input
           type="text"
