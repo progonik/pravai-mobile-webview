@@ -1,6 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import './home-design.css'
+import './learning-design.css'
 import App from './App.tsx'
 import { installViewportHeight } from './lib/viewport'
 import { installPressHaptics } from './lib/haptics'

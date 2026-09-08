@@ -6,6 +6,8 @@ import Markdown from 'react-markdown'
 import { listMessages, streamChat } from '../api/aiChatService'
 import { PageHeader } from '../components/PageHeader'
 import { ChatDrawer } from '../components/ChatDrawer'
+import { TutorSuggestions } from '../components/TutorSuggestions'
+import { DesignIcon } from '../components/DesignIcon'
 import { useT, type Translate } from '../context/LocaleContext'
 
 interface UIMessage {
@@ -81,7 +83,7 @@ export function ChatPage() {
   const [messages, setMessages] = useState<UIMessage[]>([])
   const [conversationId, setConversationId] = useState<string | undefined>(isNew ? undefined : routeId)
   const [loadingHistory, setLoadingHistory] = useState(!isNew)
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState(() => isNew && typeof location.state?.prompt === 'string' ? location.state.prompt : '')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -89,6 +91,7 @@ export function ChatPage() {
   const autoSentRef = useRef(false)
 
   useEffect(() => {
+    if (messages.length === 0) return
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages])
 
@@ -140,6 +143,8 @@ export function ChatPage() {
       // since the user might send several messages before going back.
       void queryClient.invalidateQueries({ queryKey: ['aichat', 'conversations'] })
     } catch {
+      setInput(trimmed)
+      setMessages(prev => prev.filter(message => message.id !== assistantId || message.content !== ''))
       setError(t('chat.sendFailed'))
     } finally {
       setSending(false)
@@ -167,8 +172,18 @@ export function ChatPage() {
     void send(input)
   }
 
+  const startNewChat = () => {
+    if (sending) return
+    setMessages([])
+    setConversationId(undefined)
+    setInput('')
+    setError('')
+    scrollRef.current?.scrollTo({ top: 0 })
+    navigate('/chat', { replace: true, state: null })
+  }
+
   return (
-    <div className="relative flex flex-col h-full bg-background">
+    <div className="chat-page relative flex flex-col h-full bg-background">
       {cameFromQuiz ? (
         <PageHeader title={t('tab.chat')} />
       ) : (
@@ -177,16 +192,20 @@ export function ChatPage() {
           style={{ paddingTop: 'calc(var(--safe-top) - 4px)' }}
         >
           <button
+            aria-label={t('learn.history')}
+            disabled={sending}
             onClick={() => setDrawerOpen(true)}
             className="glass press w-10 h-10 rounded-full bg-chrome border border-chrome-border shadow-chrome flex items-center justify-center text-chrome-foreground shrink-0"
           >
             <Menu size={19} />
           </button>
           <div className="flex-1 min-w-0 text-center">
-            <p className="font-display text-[15px] font-semibold text-foreground leading-tight truncate">{t('tab.chat')}</p>
+            <p className="font-display text-[17px] font-semibold text-foreground leading-tight truncate">Prav<span className="text-primary">AI</span> Tutor</p>
           </div>
           <button
-            onClick={() => navigate('/chat')}
+            aria-label={t('learn.newChat')}
+            disabled={sending}
+            onClick={startNewChat}
             className="glass press w-10 h-10 rounded-full bg-chrome border border-chrome-border shadow-chrome flex items-center justify-center text-chrome-foreground shrink-0"
           >
             <SquarePen size={18} />
@@ -194,20 +213,21 @@ export function ChatPage() {
         </div>
       )}
 
-      <ChatDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} activeId={conversationId} />
+      <ChatDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} activeId={conversationId} onNewChat={startNewChat} />
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4" style={{ paddingTop: 'calc(var(--safe-top) + 54px)' }}>
+      <div ref={scrollRef} className="chat-scroll flex-1 overflow-y-auto px-4" style={{ paddingTop: 'calc(var(--safe-top) + 54px)' }}>
         {loadingHistory ? (
           <p className="text-[13px] text-muted-foreground text-center pt-6">{t('chat.loading')}</p>
         ) : messages.length === 0 ? (
-          <div className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-2">
-            <p className="text-[15px] font-bold text-foreground">{t('chat.placeholderTitle')}</p>
-            <p className="text-[13px] text-muted-foreground leading-relaxed">{t('chat.placeholderBody')}</p>
-          </div>
+          <TutorSuggestions onSelect={prompt => {
+            setInput(prompt)
+            document.getElementById('chat-composer')?.focus()
+          }} />
         ) : (
-          <div className="flex flex-col gap-3 pb-4">
+          <div className="chat-transcript flex flex-col gap-4 pb-4" aria-live="polite" aria-relevant="additions text">
             {messages.map((m) => (
               <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                {m.role === 'assistant' && <DesignIcon name="tutor" size={35} className="chat-message-avatar" />}
                 <div
                   className={`max-w-[85%] rounded-2xl px-4 py-3 text-[14px] leading-relaxed ${
                     m.role === 'user'
@@ -237,25 +257,26 @@ export function ChatPage() {
 
       <form
         onSubmit={handleSubmit}
-        className="shrink-0 flex items-center gap-2 px-4 pt-3"
+        className="chat-compose shrink-0 flex items-end gap-2 px-4 pt-3"
         style={{
           // The floating tabbar sits at safe-bottom+14px and is 62px tall --
           // clear it with some room, unless this is the pushed
           // explain-flow screen, which has no tabbar underneath it.
-          paddingBottom: cameFromQuiz
-            ? 'max(env(safe-area-inset-bottom), 22px)'
-            : 'calc(env(safe-area-inset-bottom, 0px) + 90px)',
+          paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 100px)',
         }}
       >
-        <input
-          type="text"
+        <textarea
+          id="chat-composer"
+          rows={input.includes('\n') || input.length > 100 ? 3 : 1}
+          aria-label={t('chat.inputPlaceholder')}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={t('chat.inputPlaceholder')}
           disabled={sending}
-          className="flex-1 min-w-0 rounded-full bg-input-background border border-border px-4 py-3 text-[14px] text-foreground placeholder:text-muted-foreground outline-none"
+          className="flex-1 min-w-0 resize-none rounded-2xl bg-input-background border border-border px-4 py-3 text-[14px] text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
         />
         <button
+          aria-label={t('learn.send')}
           type="submit"
           disabled={sending || !input.trim()}
           className="press w-11 h-11 shrink-0 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40"

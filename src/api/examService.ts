@@ -165,6 +165,8 @@ export interface Readiness {
 }
 
 export interface HomeSummary {
+  /** Optional during rollout against an older backend. */
+  daily_streak?: { current_days: number; longest_days?: number; points: number; days: { date: string; completed: boolean; is_today: boolean }[] }
   resume_attempt: ResumeAttempt | null
   daily_challenge: TemplateSummary | null
   weak_topics: WeakTopic[]

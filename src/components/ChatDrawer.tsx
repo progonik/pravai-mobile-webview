@@ -22,10 +22,11 @@ function formatWhen(iso: string, t: Translate): string {
  * mounted (even closed) so the slide transition has something to animate;
  * closed state is just off-screen + non-interactive.
  */
-export function ChatDrawer({ open, onClose, activeId }: {
+export function ChatDrawer({ open, onClose, activeId, onNewChat }: {
   open: boolean
   onClose: () => void
   activeId?: string
+  onNewChat: () => void
 }) {
   const t = useT()
   const navigate = useNavigate()
@@ -46,6 +47,8 @@ export function ChatDrawer({ open, onClose, activeId }: {
         aria-hidden="true"
       />
       <div
+        inert={!open}
+        aria-hidden={!open}
         className={`fixed top-0 bottom-0 left-0 z-50 w-[82%] max-w-[320px] bg-background border-r border-border flex flex-col transition-transform duration-300 ease-out ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
@@ -54,6 +57,7 @@ export function ChatDrawer({ open, onClose, activeId }: {
         <div className="flex items-center justify-between px-4 py-3 shrink-0">
           <p className="font-display text-[16px] font-bold text-foreground">{t('tab.chat')}</p>
           <button
+            aria-label={t('home.dismiss')}
             onClick={onClose}
             className="press w-8 h-8 rounded-full bg-input-background flex items-center justify-center text-muted-foreground shrink-0"
           >
@@ -62,7 +66,7 @@ export function ChatDrawer({ open, onClose, activeId }: {
         </div>
 
         <button
-          onClick={() => { navigate('/chat'); onClose() }}
+          onClick={() => { onNewChat(); onClose() }}
           className="press-row mx-3 mb-2 rounded-2xl border border-border bg-card px-4 py-3 flex items-center gap-3 text-left shrink-0"
         >
           <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center text-primary shrink-0">
@@ -71,7 +75,7 @@ export function ChatDrawer({ open, onClose, activeId }: {
           <p className="text-[14px] font-semibold text-foreground">{t('chat.newChat')}</p>
         </button>
 
-        <div className="flex-1 overflow-y-auto px-3 pb-4">
+        <div className={`flex-1 px-3 pb-4 ${open ? 'overflow-y-auto' : 'overflow-hidden'}`}>
           <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-1 pt-2 pb-2">
             {t('chat.recents')}
           </p>

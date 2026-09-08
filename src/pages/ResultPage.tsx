@@ -96,6 +96,12 @@ export function ResultPage() {
       </div>
 
       <button
+        onClick={() => navigate('/chat/new', { state: { prompt: t('learn.resultPrompt', { title: templateTitle, correct: attempt.correct_count, mistakes: attempt.mistake_count }) } })}
+        className="press w-full rounded-2xl border border-primary/30 bg-card text-primary py-4 text-[14px] font-semibold mt-8"
+      >
+        {t('learn.askTutor')}
+      </button>
+      <button
         onClick={() => navigate('/tests', { replace: true })}
         className="press w-full bg-primary text-primary-foreground rounded-full py-4 text-[15px] font-semibold shadow-brand mt-10"
       >
