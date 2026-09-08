@@ -10,6 +10,7 @@ import { TestTypePage } from '../pages/TestTypePage'
 import { QuizIntroPage } from '../pages/QuizIntroPage'
 import { QuizPage } from '../pages/QuizPage'
 import { ResultPage } from '../pages/ResultPage'
+import { ChatListPage } from '../pages/ChatListPage'
 import { ChatPage } from '../pages/ChatPage'
 import { ProfilePage } from '../pages/ProfilePage'
 import { MyInfoPage } from '../pages/MyInfoPage'
@@ -86,7 +87,8 @@ export function AppShell() {
           <Route path="/quiz/:templateId/intro" element={<QuizIntroPage />} />
           <Route path="/quiz/:templateId" element={<QuizPage />} />
           <Route path="/result" element={<ResultPage />} />
-          <Route path="/chat" element={<ChatPage />} />
+          <Route path="/chat" element={<ChatListPage />} />
+          <Route path="/chat/:conversationId" element={<ChatPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/info" element={<MyInfoPage />} />
           <Route path="*" element={<Navigate to="/home" replace />} />

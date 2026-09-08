@@ -32,7 +32,7 @@ export const ru: Record<TranslationKey, string> = {
 
   'tab.home': 'Главная',
   'tab.tests': 'Тесты',
-  'tab.chat': 'AI Чат',
+  'tab.chat': 'PravAI Чат',
   'tab.profile': 'Профиль',
 
   'tests.questionsCount': '{count} вопросов',
@@ -71,6 +71,12 @@ export const ru: Record<TranslationKey, string> = {
   'chat.placeholderBody': 'Спросите AI-репетитора о правилах дорожного движения или подготовке к экзамену.',
   'chat.inputPlaceholder': 'Введите сообщение...',
   'chat.sendFailed': 'Не удалось отправить сообщение. Попробуйте ещё раз.',
+  'chat.loading': 'Загрузка...',
+  'chat.loadFailed': 'Не удалось загрузить переписки.',
+  'chat.untitled': 'Переписка',
+  'chat.justNow': 'только что',
+  'chat.minutesAgo': '{n} мин назад',
+  'chat.hoursAgo': '{n} ч назад',
   'chat.explainIntro': 'Я ответил неправильно на этот вопрос теста. Объясните, почему:',
   'chat.explainQuestion': 'Вопрос: {question}',
   'chat.explainMyAnswer': 'Мой ответ: {answer}',

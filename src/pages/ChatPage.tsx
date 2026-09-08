@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeft, Send } from 'lucide-react'
+import { useLocation, useParams } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
+import { Send } from 'lucide-react'
 import Markdown from 'react-markdown'
-import { streamChat } from '../api/aiChatService'
+import { listMessages, streamChat } from '../api/aiChatService'
+import { PageHeader } from '../components/PageHeader'
 import { useT, type Translate } from '../context/LocaleContext'
 
 interface UIMessage {
@@ -11,8 +13,8 @@ interface UIMessage {
   content: string
 }
 
-/** Passed via navigate('/chat', { state: { explain } }) -- see QuizPage's
- *  "Nega?" button on a wrong practice answer. */
+/** Passed via navigate('/chat/new', { state: { explain } }) -- see
+ *  QuizPage's "Nega?" button on a wrong practice answer. */
 interface ExplainPayload {
   questionBody: string
   imageUrl: string | null
@@ -58,17 +60,24 @@ const markdownComponents = {
   ),
 }
 
+/**
+ * One conversation -- either resuming an existing one (/chat/:conversationId,
+ * history loaded on mount) or starting a fresh one (/chat/new, optionally
+ * auto-sending QuizPage's "why was this wrong" prompt). Always has a back
+ * button (PageHeader's default navigate(-1)): wherever it was opened from --
+ * the chat list, or a quiz question -- that's exactly where "back" should
+ * return to.
+ */
 export function ChatPage() {
   const t = useT()
   const location = useLocation()
-  const navigate = useNavigate()
-  // Only the "Nega?" entry from a quiz question needs a way back to it --
-  // arriving from the AI Chat tab has nowhere meaningful to return to,
-  // so it stays a plain tab page (no back button) in that case.
-  const cameFromQuiz = isExplainState(location.state)
+  const { conversationId: routeId } = useParams<{ conversationId: string }>()
+  const isNew = !routeId || routeId === 'new'
+  const queryClient = useQueryClient()
 
   const [messages, setMessages] = useState<UIMessage[]>([])
-  const [conversationId, setConversationId] = useState<string | undefined>(undefined)
+  const [conversationId, setConversationId] = useState<string | undefined>(isNew ? undefined : routeId)
+  const [loadingHistory, setLoadingHistory] = useState(!isNew)
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
@@ -78,6 +87,25 @@ export function ChatPage() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages])
+
+  // Resuming an existing conversation: load its history once on mount.
+  useEffect(() => {
+    if (isNew || !routeId) return
+    let cancelled = false
+    listMessages(routeId)
+      .then((history) => {
+        if (cancelled) return
+        setMessages(history.map((m) => ({ id: m.id, role: m.role, content: m.content })))
+        setLoadingHistory(false)
+      })
+      .catch(() => {
+        if (cancelled) return
+        setError(t('chat.loadFailed'))
+        setLoadingHistory(false)
+      })
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeId, isNew])
 
   // hideUserBubble: the "why was this wrong" prompt is composed from raw
   // question/answer text for the model's benefit, not something a human
@@ -103,6 +131,10 @@ export function ChatPage() {
         )
       })
       setConversationId(result.conversationId)
+      // The list screen's cache is now stale (new/updated title,
+      // updated_at) -- refetch next time it's shown rather than eagerly,
+      // since the user might send several messages before going back.
+      void queryClient.invalidateQueries({ queryKey: ['aichat', 'conversations'] })
     } catch {
       setError(t('chat.sendFailed'))
     } finally {
@@ -117,7 +149,7 @@ export function ChatPage() {
   useEffect(() => {
     if (autoSentRef.current) return
     autoSentRef.current = true
-    if (isExplainState(location.state)) {
+    if (isNew && isExplainState(location.state)) {
       const e = location.state.explain
       // Deferred a tick so `send`'s setSending(true) isn't called
       // synchronously from within the effect body itself.
@@ -132,21 +164,13 @@ export function ChatPage() {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto top-inset px-4 pt-2">
-        <div className="flex items-center gap-3 pt-2 pb-4">
-          {cameFromQuiz && (
-            <button
-              onClick={() => navigate(-1)}
-              className="press w-8 h-8 shrink-0 rounded-full bg-card border border-border flex items-center justify-center text-foreground"
-            >
-              <ChevronLeft size={18} />
-            </button>
-          )}
-          <p className="font-display text-[20px] font-bold text-foreground">{t('tab.chat')}</p>
-        </div>
+    <div className="relative flex flex-col h-full bg-background">
+      <PageHeader title={t('tab.chat')} />
 
-        {messages.length === 0 ? (
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4" style={{ paddingTop: 'calc(var(--safe-top) + 54px)' }}>
+        {loadingHistory ? (
+          <p className="text-[13px] text-muted-foreground text-center pt-6">{t('chat.loading')}</p>
+        ) : messages.length === 0 ? (
           <div className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-2">
             <p className="text-[15px] font-bold text-foreground">{t('chat.placeholderTitle')}</p>
             <p className="text-[13px] text-muted-foreground leading-relaxed">{t('chat.placeholderBody')}</p>
@@ -184,8 +208,8 @@ export function ChatPage() {
 
       <form
         onSubmit={handleSubmit}
-        className="shrink-0 flex items-center gap-2 px-4"
-        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 90px)' }}
+        className="shrink-0 flex items-center gap-2 px-4 pt-3"
+        style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 22px)' }}
       >
         <input
           type="text"

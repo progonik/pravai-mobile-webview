@@ -30,7 +30,7 @@ export const en = {
 
   'tab.home': 'Home',
   'tab.tests': 'Tests',
-  'tab.chat': 'AI Chat',
+  'tab.chat': 'PravAI Chat',
   'tab.profile': 'Profile',
 
   'tests.questionsCount': '{count} questions',
@@ -69,6 +69,12 @@ export const en = {
   'chat.placeholderBody': 'Ask the AI tutor about traffic rules or exam preparation.',
   'chat.inputPlaceholder': 'Type a message...',
   'chat.sendFailed': "Couldn't send the message. Please try again.",
+  'chat.loading': 'Loading...',
+  'chat.loadFailed': "Couldn't load your conversations.",
+  'chat.untitled': 'Conversation',
+  'chat.justNow': 'just now',
+  'chat.minutesAgo': '{n}m ago',
+  'chat.hoursAgo': '{n}h ago',
   'chat.explainIntro': 'I got this practice question wrong. Please explain why:',
   'chat.explainQuestion': 'Question: {question}',
   'chat.explainMyAnswer': 'My answer: {answer}',

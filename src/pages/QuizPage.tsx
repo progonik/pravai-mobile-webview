@@ -105,7 +105,7 @@ export function QuizPage() {
     if (!question || !feedback) return
     const correctOption = question.options.find((o) => o.id === feedback.correctOptionId)
     const selectedOption = question.options.find((o) => o.id === feedback.selectedOptionId)
-    navigate('/chat', {
+    navigate('/chat/new', {
       state: {
         explain: {
           questionBody: question.body,

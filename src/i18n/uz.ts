@@ -32,7 +32,7 @@ export const uz: Record<TranslationKey, string> = {
 
   'tab.home': 'Bosh sahifa',
   'tab.tests': 'Testlar',
-  'tab.chat': 'AI Chat',
+  'tab.chat': 'PravAI Chat',
   'tab.profile': 'Profil',
 
   'tests.questionsCount': '{count} ta savol',
@@ -71,6 +71,12 @@ export const uz: Record<TranslationKey, string> = {
   'chat.placeholderBody': "Yo'l harakati qoidalari yoki imtihonga tayyorgarlik haqida AI o'qituvchidan so'rang.",
   'chat.inputPlaceholder': 'Xabar yozing...',
   'chat.sendFailed': "Xabar yuborilmadi. Qayta urinib ko'ring.",
+  'chat.loading': 'Yuklanmoqda...',
+  'chat.loadFailed': "Suhbatlarni yuklab bo'lmadi.",
+  'chat.untitled': 'Suhbat',
+  'chat.justNow': 'hozirgina',
+  'chat.minutesAgo': '{n} daqiqa oldin',
+  'chat.hoursAgo': '{n} soat oldin',
   'chat.explainIntro': "Men bu amaliyot testida xato qildim. Nega noto'g'ri ekanini tushuntirib bering:",
   'chat.explainQuestion': 'Savol: {question}',
   'chat.explainMyAnswer': 'Mening javobim: {answer}',
