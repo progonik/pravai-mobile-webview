@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Bot,
   BookOpen,
-  Car,
   ChevronRight,
   FileText,
   Flame,
@@ -105,14 +104,23 @@ export function HomePage() {
 
   return (
     <div className="flex-1 overflow-y-auto flex flex-col top-inset px-4 pb-28">
-      <div className="enter-1 relative overflow-hidden rounded-2xl mb-4 bg-card border border-border">
-        <Car size={140} strokeWidth={1} className="absolute -right-6 -bottom-8 text-primary/10 rotate-[-8deg]" />
+      <div
+        className="enter-1 shrink-0 relative overflow-hidden rounded-2xl mb-4 bg-card border border-border bg-cover bg-right flex items-center"
+        style={{ backgroundImage: "url('/images/hero-night-drive.webp')", minHeight: 132 }}
+      >
+        {/* The photo only needs to read on its right half; a left-to-right
+            fade back to the card color keeps the greeting text legible
+            without a flat scrim dulling the whole image. */}
+        <div
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(90deg, var(--card) 0%, var(--card) 40%, transparent 85%)' }}
+        />
         <div className="relative p-5">
           <p className="text-[13px] text-muted-foreground">{t('home.greeting')} 👋</p>
           <p className="font-display text-[22px] font-bold text-foreground mt-0.5">
             {session?.user.fullName ?? session?.user.phone}
           </p>
-          <p className="text-[12.5px] text-muted-foreground mt-1.5 max-w-[75%]">{t('home.subtitle')}</p>
+          <p className="text-[12.5px] text-muted-foreground mt-1.5 max-w-[65%]">{t('home.subtitle')}</p>
         </div>
       </div>
 
@@ -189,22 +197,33 @@ export function HomePage() {
           )}
 
           {home?.daily_challenge && (
-            <div className="enter-2 mb-3 rounded-2xl border border-primary/25 bg-primary/10 p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Flame size={15} className="text-primary" />
-                <p className="text-[11px] font-semibold text-primary uppercase tracking-wider">{t('home.dailyChallenge')}</p>
+            <div
+              className="enter-2 shrink-0 mb-3 relative overflow-hidden rounded-2xl border border-primary/25 p-4 bg-cover bg-right"
+              style={{ backgroundImage: "url('/images/daily-road.webp')" }}
+            >
+              {/* Same left-fade trick as the hero: only the right edge needs
+                  to show the scene, the left needs to stay readable. */}
+              <div
+                className="absolute inset-0"
+                style={{ background: 'linear-gradient(90deg, var(--card) 0%, var(--card) 45%, transparent 95%)' }}
+              />
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-1">
+                  <Flame size={15} className="text-primary" />
+                  <p className="text-[11px] font-semibold text-primary uppercase tracking-wider">{t('home.dailyChallenge')}</p>
+                </div>
+                <p className="text-[16px] font-bold text-foreground mb-1">{home.daily_challenge.title}</p>
+                <p className="font-mono text-[12px] text-muted-foreground mb-3">
+                  {t('tests.questionsCount', { count: String(home.daily_challenge.questions_per_attempt) })}
+                </p>
+                <button
+                  onClick={() => navigate(templateHref(home.daily_challenge!.id, home.daily_challenge!.mode))}
+                  className="press w-full max-w-[220px] rounded-full bg-primary text-primary-foreground font-semibold text-[14px] py-2.5 flex items-center justify-center gap-1.5"
+                >
+                  {t('home.start')}
+                  <ChevronRight size={16} />
+                </button>
               </div>
-              <p className="text-[16px] font-bold text-foreground mb-1">{home.daily_challenge.title}</p>
-              <p className="font-mono text-[12px] text-muted-foreground mb-3">
-                {t('tests.questionsCount', { count: String(home.daily_challenge.questions_per_attempt) })}
-              </p>
-              <button
-                onClick={() => navigate(templateHref(home.daily_challenge!.id, home.daily_challenge!.mode))}
-                className="press w-full rounded-full bg-primary text-primary-foreground font-semibold text-[14px] py-2.5 flex items-center justify-center gap-1.5"
-              >
-                {t('home.start')}
-                <ChevronRight size={16} />
-              </button>
             </div>
           )}
 

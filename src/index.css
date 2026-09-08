@@ -112,9 +112,9 @@
    accent holds its hue -- it's the one colour with brand identity, and it
    needs to read the same in either theme. */
 html.dark {
-  --background: #0E1116;
+  --background: #131820;
   --foreground: #F4F1E8;
-  --card: #171B22;
+  --card: #1D232D;
   --card-foreground: #F4F1E8;
   --primary: #2FB673;
   --primary-foreground: #06170F;
@@ -140,7 +140,7 @@ html.dark {
   --surface-raised: rgba(255, 255, 255, 0.07);
   --surface-sunken: rgba(255, 255, 255, 0.04);
 
-  --chrome: rgba(23, 27, 34, 0.72);
+  --chrome: rgba(29, 35, 45, 0.72);
   --chrome-foreground: #F4F1E8;
   --chrome-border: rgba(255, 255, 255, 0.1);
 
