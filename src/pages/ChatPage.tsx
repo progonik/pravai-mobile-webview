@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Send } from 'lucide-react'
+import Markdown from 'react-markdown'
 import { streamChat } from '../api/aiChatService'
 import { useT, type Translate } from '../context/LocaleContext'
 
@@ -34,6 +35,27 @@ function buildExplainPrompt(e: ExplainPayload, t: Translate): string {
     t('chat.explainCorrectAnswer', { answer: e.correctAnswerText }),
     t('chat.explainInstruction'),
   ].join('\n')
+}
+
+/** Assistant replies come back as markdown (Gemini writes **bold**,
+ *  lists, etc. -- rendering it raw showed the literal asterisks). These
+ *  overrides just keep every element on the bubble's own compact scale
+ *  instead of react-markdown's default browser spacing. */
+const markdownComponents = {
+  p: ({ children }: { children?: React.ReactNode }) => <p className="mb-2 last:mb-0">{children}</p>,
+  strong: ({ children }: { children?: React.ReactNode }) => <strong className="font-bold text-foreground">{children}</strong>,
+  ul: ({ children }: { children?: React.ReactNode }) => <ul className="list-disc pl-4 mb-2 last:mb-0 flex flex-col gap-1">{children}</ul>,
+  ol: ({ children }: { children?: React.ReactNode }) => <ol className="list-decimal pl-4 mb-2 last:mb-0 flex flex-col gap-1">{children}</ol>,
+  li: ({ children }: { children?: React.ReactNode }) => <li>{children}</li>,
+  h1: ({ children }: { children?: React.ReactNode }) => <p className="text-[15px] font-bold text-foreground mb-1">{children}</p>,
+  h2: ({ children }: { children?: React.ReactNode }) => <p className="text-[15px] font-bold text-foreground mb-1">{children}</p>,
+  h3: ({ children }: { children?: React.ReactNode }) => <p className="text-[14px] font-bold text-foreground mb-1">{children}</p>,
+  a: ({ children, href }: { children?: React.ReactNode; href?: string }) => (
+    <a href={href} target="_blank" rel="noreferrer" className="underline text-primary-hover">{children}</a>
+  ),
+  code: ({ children }: { children?: React.ReactNode }) => (
+    <code className="bg-input-background rounded px-1 py-0.5 text-[13px]">{children}</code>
+  ),
 }
 
 export function ChatPage() {
@@ -119,13 +141,23 @@ export function ChatPage() {
             {messages.map((m) => (
               <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-3 text-[14px] leading-relaxed whitespace-pre-wrap ${
+                  className={`max-w-[85%] rounded-2xl px-4 py-3 text-[14px] leading-relaxed ${
                     m.role === 'user'
-                      ? 'bg-primary text-primary-foreground rounded-br-md'
+                      ? 'bg-primary text-primary-foreground rounded-br-md whitespace-pre-wrap'
                       : 'bg-card border border-border text-foreground rounded-bl-md'
                   }`}
                 >
-                  {m.content || (m.role === 'assistant' && sending ? '···' : '')}
+                  {m.role === 'assistant' ? (
+                    m.content ? (
+                      <Markdown components={markdownComponents}>{m.content}</Markdown>
+                    ) : sending ? (
+                      '···'
+                    ) : (
+                      ''
+                    )
+                  ) : (
+                    m.content
+                  )}
                 </div>
               </div>
             ))}
