@@ -13,7 +13,14 @@ import request from './request'
 export interface TemplateSummary {
   id: string
   title: string
-  mode: 'practice' | 'exam'
+  /** A question_types.code value -- an open, admin-managed set (backend
+   *  migration 000025), not a fixed two/three-way choice. "exam" is the
+   *  one value the backend treats specially (mistake-limit scoring); every
+   *  other mode groups and displays the same way, driven by mode_name. */
+  mode: string
+  /** Mode's display name, already resolved server-side -- group/label by
+   *  this, never by hardcoding text per mode value. */
+  mode_name: string
   topic_id: string | null
   topic_name: string | null
   license_category_id: string

@@ -25,8 +25,10 @@ existing account (see "Auth flow" below), session persistence + silent
 refresh-on-401, `GET/PATCH /users/me`,
 `PATCH /users/me/language`, avatar upload, the language switcher (with
 backend sync), tab navigation, scroll memory, the welcome screen, and
-`TestsPage` (`GET /exam/templates`, grouped by `mode` into Practice/Exam
-sections -- see `src/api/examService.ts`).
+`TestsPage` (`GET /exam/templates`, grouped by `mode` -- an open,
+admin-managed set of question_types codes, not a fixed practice/exam pair;
+sections are labeled from each template's own `mode_name`, never a
+hardcoded per-mode string -- see `src/api/examService.ts`).
 
 **Placeholder only** (`HomePage`, `QuizPage`, `ResultPage`, `ChatPage` all
 render a "coming soon" card): these need backend work first.

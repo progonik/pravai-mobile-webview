@@ -37,8 +37,6 @@ export const ru: Record<TranslationKey, string> = {
 
   'tests.placeholderTitle': 'Тесты скоро появятся',
   'tests.placeholderBody': 'Здесь появятся тренировочные разделы и официальные билеты по темам и категориям.',
-  'tests.practiceSection': 'Практика',
-  'tests.examSection': 'Экзамен',
   'tests.questionsCount': '{count} вопросов',
   'tests.noTimeLimit': 'Без ограничения по времени',
   'tests.officialTicket': 'Официальный билет',

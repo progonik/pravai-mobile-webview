@@ -35,8 +35,6 @@ export const en = {
 
   'tests.placeholderTitle': 'Tests are coming soon',
   'tests.placeholderBody': "Practice sections and official-style tickets will appear here, organized by topic and license category.",
-  'tests.practiceSection': 'Practice',
-  'tests.examSection': 'Exam',
   'tests.questionsCount': '{count} questions',
   'tests.noTimeLimit': 'No time limit',
   'tests.officialTicket': 'Official ticket',

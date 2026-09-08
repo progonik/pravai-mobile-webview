@@ -37,8 +37,6 @@ export const uz: Record<TranslationKey, string> = {
 
   'tests.placeholderTitle': 'Testlar tez orada',
   'tests.placeholderBody': "Mavzu va toifalar bo'yicha mashq bo'limlari va rasmiy biletlar shu yerda paydo bo'ladi.",
-  'tests.practiceSection': 'Mashq',
-  'tests.examSection': 'Imtihon',
   'tests.questionsCount': '{count} ta savol',
   'tests.noTimeLimit': 'Vaqt chegarasi yo\'q',
   'tests.officialTicket': 'Rasmiy bilet',

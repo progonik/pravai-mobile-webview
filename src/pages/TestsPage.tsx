@@ -44,17 +44,12 @@ function TemplateCard({ template }: { template: TemplateSummary }) {
 }
 
 function TemplateSection({ title, templates }: { title: string; templates: TemplateSummary[] }) {
-  const t = useT()
   return (
     <div className="flex flex-col gap-2.5">
       <p className="font-display text-[15px] font-bold text-foreground">{title}</p>
-      {templates.length === 0 ? (
-        <p className="text-[13px] text-muted-foreground">{t('tests.emptySection')}</p>
-      ) : (
-        <div className="flex flex-col gap-2.5">
-          {templates.map((tpl) => <TemplateCard key={tpl.id} template={tpl} />)}
-        </div>
-      )}
+      <div className="flex flex-col gap-2.5">
+        {templates.map((tpl) => <TemplateCard key={tpl.id} template={tpl} />)}
+      </div>
     </div>
   )
 }
@@ -74,12 +69,40 @@ function TemplateSectionSkeleton() {
   )
 }
 
+interface ModeGroup {
+  mode: string
+  modeName: string
+  templates: TemplateSummary[]
+}
+
 /**
- * Real test-content listing -- grouped by `mode` (practice / exam), which is
- * what actually distinguishes them on the backend (TestTemplate.Mode), not
- * the separate admin-managed question_types reference table. Quiz-taking
- * itself (tapping a card to start an attempt) isn't wired yet -- see
- * QuizPage's own placeholder note -- so cards are display-only for now.
+ * Groups templates by `mode`, in the order each mode first appears in the
+ * (already created_at-desc) list the backend returns. Modes are an open,
+ * admin-managed set (question_types rows, see the backend's migration
+ * 000025) -- there is no fixed list of sections to hardcode here, and the
+ * section title comes from each template's own `mode_name`, never a
+ * client-side label keyed by mode.
+ */
+function groupByMode(templates: TemplateSummary[]): ModeGroup[] {
+  const groups: ModeGroup[] = []
+  const byMode = new Map<string, ModeGroup>()
+  for (const tpl of templates) {
+    let group = byMode.get(tpl.mode)
+    if (!group) {
+      group = { mode: tpl.mode, modeName: tpl.mode_name, templates: [] }
+      byMode.set(tpl.mode, group)
+      groups.push(group)
+    }
+    group.templates.push(tpl)
+  }
+  return groups
+}
+
+/**
+ * Real test-content listing -- grouped by `mode`, whatever modes actually
+ * exist (see groupByMode above). Quiz-taking itself (tapping a card to
+ * start an attempt) isn't wired yet -- see QuizPage's own placeholder note
+ * -- so cards are display-only for now.
  */
 export function TestsPage() {
   const t = useT()
@@ -90,8 +113,7 @@ export function TestsPage() {
     staleTime: STALE_TIME.feed,
   })
 
-  const practice = data?.filter((tpl) => tpl.mode === 'practice') ?? []
-  const exam = data?.filter((tpl) => tpl.mode === 'exam') ?? []
+  const sections = groupByMode(data ?? [])
 
   return (
     <div className="flex-1 overflow-y-auto flex flex-col top-inset px-4 pb-28">
@@ -108,10 +130,17 @@ export function TestsPage() {
           <TemplateSectionSkeleton />
           <TemplateSectionSkeleton />
         </div>
+      ) : sections.length === 0 ? (
+        !isError && (
+          <div className="rounded-2xl border border-border bg-card p-5">
+            <p className="text-[13px] text-muted-foreground leading-relaxed">{t('tests.emptySection')}</p>
+          </div>
+        )
       ) : (
         <div className="flex flex-col gap-6">
-          <TemplateSection title={t('tests.practiceSection')} templates={practice} />
-          <TemplateSection title={t('tests.examSection')} templates={exam} />
+          {sections.map(({ mode, modeName, templates }) => (
+            <TemplateSection key={mode} title={modeName} templates={templates} />
+          ))}
         </div>
       )}
     </div>
