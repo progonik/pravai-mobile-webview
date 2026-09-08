@@ -35,3 +35,18 @@ export interface TemplateSummary {
 export async function listTemplates(): Promise<TemplateSummary[]> {
   return request.get('/api/v1/exam/templates')
 }
+
+/** A test-type category (question_types row) -- the full set that exists,
+ *  independent of whether any template currently uses one. The Tests tab
+ *  lists all of these first, then drills into whichever templates match a
+ *  chosen type's `code`, so a brand-new type an admin just added is visible
+ *  immediately even before a template is created for it. */
+export interface QuestionType {
+  id: string
+  code: string
+  name: string
+}
+
+export async function listQuestionTypes(): Promise<QuestionType[]> {
+  return request.get('/api/v1/exam/question-types')
+}

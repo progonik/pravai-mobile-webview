@@ -25,20 +25,24 @@ existing account (see "Auth flow" below), session persistence + silent
 refresh-on-401, `GET/PATCH /users/me`,
 `PATCH /users/me/language`, avatar upload, the language switcher (with
 backend sync), tab navigation, scroll memory, the welcome screen, and
-`TestsPage` (`GET /exam/templates`, grouped by `mode` -- an open,
-admin-managed set of question_types codes, not a fixed practice/exam pair;
-sections are labeled from each template's own `mode_name`, never a
-hardcoded per-mode string -- see `src/api/examService.ts`).
+`TestsPage`/`TestTypePage` (two screens, not one): `TestsPage`
+(`GET /exam/question-types`) lists every test-type category that exists --
+an open, admin-managed set (question_types rows), not a fixed practice/exam
+pair -- independent of whether any template uses one yet, so a type an
+admin just added shows up immediately. Tapping one pushes `TestTypePage`
+(`/tests/:mode`), which fetches `GET /exam/templates` and filters
+client-side by that type's code, showing an empty state rather than
+nothing if no template exists for it yet. See `src/api/examService.ts`.
 
 **Placeholder only** (`HomePage`, `QuizPage`, `ResultPage`, `ChatPage` all
 render a "coming soon" card): these need backend work first.
 Specifically, the backend currently exposes:
-- `GET /exam/templates` (list, used by `TestsPage`) and `POST
-  /exam/attempts` (start/resume) + `POST /exam/attempts/:id/answer` -- but no
-  way to *list* topics/license categories from a non-admin token yet (only
-  needed for filter dropdowns, not for the basic Practice/Exam list). The
-  admin-panel equivalents exist under `/api/v1/admin/*` but require an admin
-  role.
+- `GET /exam/question-types` and `GET /exam/templates` (list, used by
+  `TestsPage`/`TestTypePage`) and `POST /exam/attempts` (start/resume) +
+  `POST /exam/attempts/:id/answer` -- but no way to *list*
+  topics/license categories from a non-admin token yet (only needed for
+  filter dropdowns, not for the type/template list). The admin-panel
+  equivalents exist under `/api/v1/admin/*` but require an admin role.
 - No chat/explanation endpoint exists for the AI-tutor screen at all.
 
 Do not wire a screen to admin endpoints as a workaround -- add the missing
