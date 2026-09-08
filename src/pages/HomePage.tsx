@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import {
+  BarChart3,
   Bot,
   BookOpen,
   ChevronRight,
@@ -155,7 +156,7 @@ export function HomePage() {
               onClick={() => navigate('/tests')}
               className="press-row rounded-2xl border border-border bg-card p-3 flex flex-col items-center gap-2 text-center"
             >
-              <div className="tile-accent w-10 h-10 rounded-xl bg-input-background flex items-center justify-center text-primary">
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
                 <ListChecks size={18} />
               </div>
               <span className="text-[11.5px] font-semibold text-foreground leading-tight">{t('home.tileTests')}</span>
@@ -164,7 +165,7 @@ export function HomePage() {
               onClick={() => navigate('/tests/practice')}
               className="press-row rounded-2xl border border-border bg-card p-3 flex flex-col items-center gap-2 text-center"
             >
-              <div className="tile-accent w-10 h-10 rounded-xl bg-input-background flex items-center justify-center text-primary">
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
                 <BookOpen size={18} />
               </div>
               <span className="text-[11.5px] font-semibold text-foreground leading-tight">{t('home.tileTopics')}</span>
@@ -173,7 +174,7 @@ export function HomePage() {
               onClick={() => navigate('/chat')}
               className="press-row rounded-2xl border border-border bg-card p-3 flex flex-col items-center gap-2 text-center"
             >
-              <div className="tile-accent w-10 h-10 rounded-xl bg-input-background flex items-center justify-center text-primary">
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
                 <Bot size={18} />
               </div>
               <span className="text-[11.5px] font-semibold text-foreground leading-tight">{t('home.tileAiTutor')}</span>
@@ -232,7 +233,7 @@ export function HomePage() {
               onClick={() => navigate('/tests/exam')}
               className="press-row rounded-2xl border border-border bg-card p-4 flex flex-col items-start gap-2.5 text-left"
             >
-              <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center text-primary">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: '#2F6FED' }}>
                 <Target size={17} />
               </div>
               <span className="text-[12.5px] font-semibold text-foreground leading-tight">{t('home.tileExamSim')}</span>
@@ -241,7 +242,7 @@ export function HomePage() {
               onClick={comingSoon}
               className="press-row rounded-2xl border border-border bg-card p-4 flex flex-col items-start gap-2.5 text-left"
             >
-              <div className="w-9 h-9 rounded-full bg-destructive/15 flex items-center justify-center text-destructive">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: '#8B5CF6' }}>
                 <ListX size={17} />
               </div>
               <span className="text-[12.5px] font-semibold text-foreground leading-tight">{t('home.tileMistakes')}</span>
@@ -250,8 +251,8 @@ export function HomePage() {
               onClick={comingSoon}
               className="press-row rounded-2xl border border-border bg-card p-4 flex flex-col items-start gap-2.5 text-left"
             >
-              <div className="w-9 h-9 rounded-full bg-warning/15 flex items-center justify-center text-warning">
-                <Star size={17} />
+              <div className="w-9 h-9 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: '#F5A524' }}>
+                <Star size={17} fill="currentColor" />
               </div>
               <span className="text-[12.5px] font-semibold text-foreground leading-tight">{t('home.tileRating')}</span>
             </button>
@@ -259,7 +260,7 @@ export function HomePage() {
               onClick={comingSoon}
               className="press-row rounded-2xl border border-border bg-card p-4 flex flex-col items-start gap-2.5 text-left"
             >
-              <div className="w-9 h-9 rounded-full bg-input-background flex items-center justify-center text-muted-foreground">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: '#14B8A6' }}>
                 <FileText size={17} />
               </div>
               <span className="text-[12.5px] font-semibold text-foreground leading-tight">{t('home.tileRules')}</span>
@@ -269,9 +270,14 @@ export function HomePage() {
           {home && home.weak_topics.length > 0 && (
             <div className="enter-3 mb-4 rounded-2xl border border-border bg-card p-4">
               <div className="flex items-start justify-between gap-3 mb-1">
-                <div>
-                  <p className="text-[14.5px] font-bold text-foreground">{t('home.weakTopics')}</p>
-                  <p className="text-[12px] text-muted-foreground">{t('home.weakTopicsSubtitle')}</p>
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0">
+                    <BarChart3 size={16} />
+                  </div>
+                  <div>
+                    <p className="text-[14.5px] font-bold text-foreground">{t('home.weakTopics')}</p>
+                    <p className="text-[12px] text-muted-foreground">{t('home.weakTopicsSubtitle')}</p>
+                  </div>
                 </div>
                 <button onClick={comingSoon} className="press flex items-center gap-0.5 text-[12px] font-semibold text-primary shrink-0 pt-0.5">
                   {t('home.viewAll')}
@@ -288,7 +294,7 @@ export function HomePage() {
 
           {worstTopic && !tipDismissed && (
             <div className="enter-3 mb-4 rounded-2xl border border-primary/30 bg-card p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center text-primary shrink-0">
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0">
                 <Bot size={19} />
               </div>
               <div className="flex-1 min-w-0">
