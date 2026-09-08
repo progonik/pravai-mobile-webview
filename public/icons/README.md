@@ -13,3 +13,8 @@ Files: car, tests, book, brain, target, pin, star, chart, turn, crossroad, warni
 speed, home, checklist, profile, chat, bell, flame, gift, check, tutor.
 
 The app's shared React wrapper is src/components/DesignIcon.tsx.
+# Theme variants
+
+Default SVGs retain the dark-theme neon palette. The `light/` folder contains
+matching emerald, blue, violet, and amber variants for light backgrounds.
+Both palettes are included in `../pravai-icons.zip`.

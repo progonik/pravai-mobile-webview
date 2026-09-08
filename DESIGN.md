@@ -31,13 +31,16 @@ isolation and that active exams never reveal answer keys through review.
 
 Home matches the supplied dark teal reference with mint accents, road artwork,
 custom SVG icons, progress cards, topic accuracy rows, a tutor banner, and one
-four-destination navigation pill. At 700px and below the overview stacks and the
+three-tab navigation pill with a separate circular AI-chat button. At 700px and below the overview stacks and the
 feature tiles form two columns. Other screens inherit the updated dark palette.
 Light theme remains supported.
 
 Icons: public/icons/index.html for previews, public/pravai-icons.zip for the
 complete collection. SVGs are custom recreations rather than screenshot crops.
-The pre-existing road images are reused.
+Dark mode retains the pre-existing road images. Light mode uses generated daylight
+variants, contrast-adjusted SVG icons in public/icons/light, and light streak,
+status, and tutor surfaces. Theme changes switch artwork immediately through CSS.
+See public/images/LIGHT_ARTWORK.md for generation prompts and asset provenance.
 
 ## Live behavior
 

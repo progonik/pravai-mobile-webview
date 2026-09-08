@@ -1,0 +1,52 @@
+/* Daylight artwork and ink colors; html.dark retains the original night design. */
+html:not(.dark) .home-hero {
+  background-image: linear-gradient(90deg,var(--background) 0%,color-mix(in srgb,var(--background) 90%,transparent) 28%,transparent 76%),linear-gradient(0deg,var(--background),transparent 25%),url('/images/hero-day-drive.webp');
+}
+html:not(.dark) .daily-card {
+  background-image: linear-gradient(90deg,var(--card) 0%,color-mix(in srgb,var(--card) 94%,transparent) 38%,transparent 100%),url('/images/daily-road-day.webp');
+}
+html:not(.dark) .icon-medallion { background: #dceee3; }
+html:not(.dark) .icon-medallion.blue { background: #dceafa; box-shadow: none; }
+html:not(.dark) .icon-medallion.purple { background: #eee2f6; }
+html:not(.dark) .icon-medallion.gold { background: #f5e8c7; }
+html:not(.dark) .small-medallion { background: #f7e7c5; }
+html:not(.dark) .streak-reward { background: #fffbf2f5; border-color: #ddcfac; }
+html:not(.dark) .streak-reward p { color: #465b50; }
+html:not(.dark) .streak-reward strong { color: #8c5907; }
+html:not(.dark) .streak-calendar { background: #f9fcf7f5; border-color: #c8dace; }
+html:not(.dark) .streak-day { background: #e6eee7; color: #53685b; }
+html:not(.dark) .streak-day strong { color: #176b49; }
+html:not(.dark) .streak-day.today { background: #c9e8d4; color: #145c3e; box-shadow: inset 0 0 0 1px #83b99a; }
+html:not(.dark) .home-start { background: linear-gradient(100deg,#16784e,#08765c); color: #fff; }
+html:not(.dark) .topic-status.attention { background: #fbe0e4; color: #a12f44; }
+html:not(.dark) .topic-status.practice { background: #f8eaca; color: #885509; }
+html:not(.dark) .topic-status.good { background: #d9efe1; color: #17643f; }
+html:not(.dark) .tutor-open { background: #e1f0e9; border-color: #a9ccbc; }
+html:not(.dark) .weak-topic-row>.design-icon { filter: grayscale(1) brightness(.7); opacity: 1; }
+html:not(.dark) .design-tabbar button:not(.active) img,
+html:not(.dark) .notification-button img { filter: grayscale(1); opacity: .85; }
+html:not(.dark) .design-tabbar button.active { background: #d5eadc; }
+@media (max-width: 700px) {
+  html:not(.dark) .daily-card { background-image: linear-gradient(90deg,var(--card),color-mix(in srgb,var(--card) 94%,transparent) 38%,color-mix(in srgb,var(--card) 12%,transparent)),url('/images/daily-road-day.webp'); }
+}
+html:not(.dark) .design-icon[data-icon="bell"] { content: url("/icons/light/bell.svg"); }
+html:not(.dark) .design-icon[data-icon="book"] { content: url("/icons/light/book.svg"); }
+html:not(.dark) .design-icon[data-icon="brain"] { content: url("/icons/light/brain.svg"); }
+html:not(.dark) .design-icon[data-icon="car"] { content: url("/icons/light/car.svg"); }
+html:not(.dark) .design-icon[data-icon="chart"] { content: url("/icons/light/chart.svg"); }
+html:not(.dark) .design-icon[data-icon="chat"] { content: url("/icons/light/chat.svg"); }
+html:not(.dark) .design-icon[data-icon="check"] { content: url("/icons/light/check.svg"); }
+html:not(.dark) .design-icon[data-icon="checklist"] { content: url("/icons/light/checklist.svg"); }
+html:not(.dark) .design-icon[data-icon="crossroad"] { content: url("/icons/light/crossroad.svg"); }
+html:not(.dark) .design-icon[data-icon="flame"] { content: url("/icons/light/flame.svg"); }
+html:not(.dark) .design-icon[data-icon="gift"] { content: url("/icons/light/gift.svg"); }
+html:not(.dark) .design-icon[data-icon="home"] { content: url("/icons/light/home.svg"); }
+html:not(.dark) .design-icon[data-icon="pin"] { content: url("/icons/light/pin.svg"); }
+html:not(.dark) .design-icon[data-icon="profile"] { content: url("/icons/light/profile.svg"); }
+html:not(.dark) .design-icon[data-icon="speed"] { content: url("/icons/light/speed.svg"); }
+html:not(.dark) .design-icon[data-icon="star"] { content: url("/icons/light/star.svg"); }
+html:not(.dark) .design-icon[data-icon="target"] { content: url("/icons/light/target.svg"); }
+html:not(.dark) .design-icon[data-icon="tests"] { content: url("/icons/light/tests.svg"); }
+html:not(.dark) .design-icon[data-icon="turn"] { content: url("/icons/light/turn.svg"); }
+html:not(.dark) .design-icon[data-icon="tutor"] { content: url("/icons/light/tutor.svg"); }
+html:not(.dark) .design-icon[data-icon="warning"] { content: url("/icons/light/warning.svg"); }

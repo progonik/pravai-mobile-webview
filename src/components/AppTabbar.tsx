@@ -6,14 +6,15 @@ const tabs = [
   { path: '/home', label: 'tab.home', icon: 'home' },
   { path: '/tests', label: 'tab.tests', icon: 'checklist' },
   { path: '/profile', label: 'tab.profile', icon: 'profile' },
-  { path: '/chat', label: 'tab.chat', icon: 'chat' },
 ] as const
 
 export function AppTabbar() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const t = useT()
+  const chatActive = pathname === '/chat' || pathname.startsWith('/chat/')
   return <nav className="design-tabbar" aria-label={t('home.navigation')}>
+    <div className="design-tabbar-pill">
     {tabs.map(tab => {
       const exact = pathname === tab.path || (pathname === '/' && tab.path === '/home')
       const active = exact || pathname.startsWith(tab.path + '/')
@@ -21,5 +22,9 @@ export function AppTabbar() {
         <DesignIcon name={tab.icon} size={30} /><span>{t(tab.label)}</span>
       </button>
     })}
+    </div>
+    <button className={`design-chat-button${chatActive ? ' active' : ''}`} aria-label={t('tab.chat')} aria-current={chatActive ? 'page' : undefined} onClick={() => navigate('/chat', { replace: true })}>
+      <DesignIcon name="chat" size={32} />
+    </button>
   </nav>
 }
