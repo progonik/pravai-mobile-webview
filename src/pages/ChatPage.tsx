@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import { Send } from 'lucide-react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { ChevronLeft, Send } from 'lucide-react'
 import Markdown from 'react-markdown'
 import { streamChat } from '../api/aiChatService'
 import { useT, type Translate } from '../context/LocaleContext'
@@ -61,6 +61,11 @@ const markdownComponents = {
 export function ChatPage() {
   const t = useT()
   const location = useLocation()
+  const navigate = useNavigate()
+  // Only the "Nega?" entry from a quiz question needs a way back to it --
+  // arriving from the AI Chat tab has nowhere meaningful to return to,
+  // so it stays a plain tab page (no back button) in that case.
+  const cameFromQuiz = isExplainState(location.state)
 
   const [messages, setMessages] = useState<UIMessage[]>([])
   const [conversationId, setConversationId] = useState<string | undefined>(undefined)
@@ -129,7 +134,17 @@ export function ChatPage() {
   return (
     <div className="flex flex-col h-full">
       <div ref={scrollRef} className="flex-1 overflow-y-auto top-inset px-4 pt-2">
-        <p className="font-display text-[20px] font-bold text-foreground pt-2 pb-4">{t('tab.chat')}</p>
+        <div className="flex items-center gap-3 pt-2 pb-4">
+          {cameFromQuiz && (
+            <button
+              onClick={() => navigate(-1)}
+              className="press w-8 h-8 shrink-0 rounded-full bg-card border border-border flex items-center justify-center text-foreground"
+            >
+              <ChevronLeft size={18} />
+            </button>
+          )}
+          <p className="font-display text-[20px] font-bold text-foreground">{t('tab.chat')}</p>
+        </div>
 
         {messages.length === 0 ? (
           <div className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-2">
