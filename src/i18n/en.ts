@@ -43,6 +43,7 @@ export const en = {
   'quiz.intro.examRulesTitle': 'How this works',
   'quiz.intro.examRules': "You can make up to 2 mistakes — each one adds 5 extra questions from that topic. A 3rd mistake ends the test.",
   'quiz.intro.start': 'Start',
+  'quiz.questionLabel': 'Question',
   'quiz.noQuestions': "There aren't any questions available for this test yet.",
   'quiz.startFailed': "Couldn't start this test. Please try again.",
   'quiz.submitFailed': "Couldn't submit that answer. Please try again.",

@@ -45,6 +45,7 @@ export const ru: Record<TranslationKey, string> = {
   'quiz.intro.examRulesTitle': 'Как это работает',
   'quiz.intro.examRules': 'Можно допустить до 2 ошибок — каждая добавляет 5 дополнительных вопросов по этой теме. 3-я ошибка завершает тест.',
   'quiz.intro.start': 'Начать',
+  'quiz.questionLabel': 'Вопрос',
   'quiz.noQuestions': 'Для этого теста пока нет доступных вопросов.',
   'quiz.startFailed': 'Не удалось начать тест. Попробуйте снова.',
   'quiz.submitFailed': 'Не удалось отправить ответ. Попробуйте снова.',

@@ -140,12 +140,13 @@ export function QuizPage() {
           </div>
         ) : question && (
           <>
-            <div className="rounded-2xl border border-border bg-card p-5 mb-4">
+            <div className="rounded-2xl border border-primary/30 bg-primary/10 p-5 mb-4">
+              <p className="text-[11px] font-bold text-primary-hover uppercase tracking-wide mb-1.5">{t('quiz.questionLabel')}</p>
               <p className="text-[17px] font-bold text-foreground leading-snug">{question.body}</p>
             </div>
 
             {question.image_urls.length > 0 && (
-              <div className="rounded-2xl overflow-hidden border border-border bg-card mb-4">
+              <div className="rounded-2xl overflow-hidden border border-primary/30 mb-4">
                 <img src={question.image_urls[0]} alt="" className="w-full h-auto block" />
               </div>
             )}

@@ -45,6 +45,7 @@ export const uz: Record<TranslationKey, string> = {
   'quiz.intro.examRulesTitle': "Bu qanday ishlaydi",
   'quiz.intro.examRules': "2 tagacha xato qilishingiz mumkin — har biri o'sha mavzudan 5 ta qo'shimcha savol qo'shadi. 3-xato testni yakunlaydi.",
   'quiz.intro.start': 'Boshlash',
+  'quiz.questionLabel': 'Savol',
   'quiz.noQuestions': "Bu test uchun hozircha savollar mavjud emas.",
   'quiz.startFailed': "Testni boshlab bo'lmadi. Qayta urinib ko'ring.",
   'quiz.submitFailed': "Javobni yuborib bo'lmadi. Qayta urinib ko'ring.",
