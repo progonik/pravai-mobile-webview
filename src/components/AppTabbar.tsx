@@ -57,11 +57,11 @@ export function AppTabbar() {
             key={path}
             onClick={() => openTab(path, isExact)}
             aria-current={isActive ? 'page' : undefined}
-            className="press-tab flex-1 h-full flex flex-col items-center justify-center gap-0.5"
+            className="press-tab flex-1 h-full flex items-center justify-center"
           >
             <span
-              className={`flex items-center justify-center rounded-full transition-colors ${
-                isActive ? 'bg-primary/15 px-3 py-1' : 'px-3 py-1'
+              className={`flex flex-col items-center justify-center gap-0.5 rounded-full py-1.5 transition-colors ${
+                isActive ? 'bg-primary/15 px-4' : 'px-1'
               }`}
             >
               <Icon
@@ -69,13 +69,13 @@ export function AppTabbar() {
                 strokeWidth={isActive ? 2.2 : 1.8}
                 className={isActive ? 'text-primary' : 'text-chrome-foreground/55'}
               />
-            </span>
-            <span
-              className={`text-[10px] leading-none font-semibold ${
-                isActive ? 'text-primary' : 'text-chrome-foreground/55'
-              }`}
-            >
-              {t(labelKey)}
+              <span
+                className={`text-[10px] leading-none font-semibold ${
+                  isActive ? 'text-primary' : 'text-chrome-foreground/55'
+                }`}
+              >
+                {t(labelKey)}
+              </span>
             </span>
           </button>
         )
