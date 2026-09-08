@@ -228,7 +228,7 @@ export function QuizPage() {
           {!feedback.isCorrect && attempt?.mode === 'practice' && (
             <button
               onClick={handleWhy}
-              className="press shrink-0 rounded-full border border-primary/30 bg-primary/10 text-primary-hover px-5 py-4 text-[15px] font-semibold"
+              className="press flex-1 rounded-full border border-primary/30 bg-primary/10 text-primary-hover py-4 text-[15px] font-semibold"
             >
               {t('quiz.why')}
             </button>
