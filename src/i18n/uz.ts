@@ -96,6 +96,10 @@ export const uz: Record<TranslationKey, string> = {
   'field.fullNamePlaceholder': "To'liq ismingiz",
   'field.phone': 'Telefon',
   'field.dateOfBirth': "Tug'ilgan sana",
+  'field.region': 'Viloyat',
+  'field.district': 'Tuman',
+  'field.selectRegion': 'Viloyatni tanlang',
+  'field.selectDistrict': 'Tumanni tanlang',
 
   'common.saving': 'Saqlanmoqda…',
   'common.save': 'Saqlash',

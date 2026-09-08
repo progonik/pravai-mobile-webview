@@ -96,6 +96,10 @@ export const ru: Record<TranslationKey, string> = {
   'field.fullNamePlaceholder': 'Ваше полное имя',
   'field.phone': 'Телефон',
   'field.dateOfBirth': 'Дата рождения',
+  'field.region': 'Область',
+  'field.district': 'Район',
+  'field.selectRegion': 'Выберите область',
+  'field.selectDistrict': 'Выберите район',
 
   'common.saving': 'Сохранение…',
   'common.save': 'Сохранить',

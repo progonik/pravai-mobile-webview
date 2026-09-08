@@ -16,11 +16,12 @@ import type { MeResponse, TokenPair, UserNotFoundBody, VerifyOtpResult } from '.
  *   POST /auth/otp/verify  { phone, code, device_id }                    → VerifyOtpResult
  *                                                                          | 404 UserNotFoundBody
  *   POST /auth/register    { phone, registration_ticket, device_id,
- *                            full_name, date_of_birth }                   → VerifyOtpResult
+ *                            full_name, date_of_birth,
+ *                            region_id?, district_id? }                   → VerifyOtpResult
  *   POST /auth/refresh     { refresh_token, device_id }                   → TokenPair
  *   POST /auth/logout      { refresh_token }                              → { message }
  *   GET  /users/me                                                        → MeResponse
- *   PATCH /users/me        { full_name }                                  → MeResponse
+ *   PATCH /users/me        { full_name, region_id?, district_id? }        → MeResponse
  *   PATCH /users/me/language { language }                                 → 204
  *
  * send/verify/register happen before there's any saved app_language for the
@@ -66,6 +67,8 @@ export async function register(
   registrationTicket: string,
   fullName: string,
   dateOfBirth: string,
+  regionId: string,
+  districtId: string,
 ): Promise<VerifyOtpResult> {
   return request.post(
     '/api/v1/auth/register',
@@ -75,6 +78,8 @@ export async function register(
       device_id: getDeviceId(),
       full_name: fullName,
       date_of_birth: dateOfBirth,
+      region_id: regionId || undefined,
+      district_id: districtId || undefined,
     },
     { params: { lang: getActiveLang() } },
   )
@@ -88,8 +93,12 @@ export async function getMe(): Promise<MeResponse> {
   return request.get('/api/v1/users/me')
 }
 
-export async function updateFullName(fullName: string): Promise<MeResponse> {
-  return request.patch('/api/v1/users/me', { full_name: fullName })
+export async function updateProfile(fullName: string, regionId: string, districtId: string): Promise<MeResponse> {
+  return request.patch('/api/v1/users/me', {
+    full_name: fullName,
+    region_id: regionId || null,
+    district_id: districtId || null,
+  })
 }
 
 export async function updateAppLanguage(language: Lang): Promise<void> {

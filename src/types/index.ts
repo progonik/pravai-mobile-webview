@@ -12,4 +12,12 @@ export interface UserProfile {
   dateOfBirth: string | null
   avatarUrl: string | null
   appLanguage: Lang
+  /** Optional -- null until the user picks one at registration or from
+   *  their profile. regionName/districtName are already resolved to a
+   *  display string (only present when fetched via GET /users/me; the
+   *  verify-OTP/register response doesn't resolve names, just ids). */
+  regionId: string | null
+  regionName: string | null
+  districtId: string | null
+  districtName: string | null
 }

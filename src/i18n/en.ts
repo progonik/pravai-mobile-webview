@@ -94,6 +94,10 @@ export const en = {
   'field.fullNamePlaceholder': 'Your full name',
   'field.phone': 'Phone',
   'field.dateOfBirth': 'Date of birth',
+  'field.region': 'Region',
+  'field.district': 'District',
+  'field.selectRegion': 'Select region',
+  'field.selectDistrict': 'Select district',
 
   'common.saving': 'Saving…',
   'common.save': 'Save',

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, Calendar, Check, ChevronLeft, Phone, ShieldCheck, User, UserPlus } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { LanguageSelector, LogoMark } from '../components/auth/AuthUI'
+import { RegionDistrictPicker } from '../components/RegionDistrictPicker'
 import { useT } from '../context/LocaleContext'
 import {
   formatE164, formatUzPhone, isCompleteUzPhone, isValidUzPhone, sanitizeUzDigits, toE164, UZ_CODE,
@@ -275,16 +276,19 @@ const DOB_MIN = new Date(Date.now() - 120 * 365.25 * 24 * 60 * 60 * 1000).toISOS
 
 function RegisterStep({ phone, onRegister, onBack }: {
   phone: string
-  onRegister: (fullName: string, dateOfBirth: string) => void
+  onRegister: (fullName: string, dateOfBirth: string, regionId: string, districtId: string) => void
   onBack: () => void
 }) {
   const [fullName, setFullName] = useState('')
   const [dateOfBirth, setDateOfBirth] = useState('')
+  // Optional -- not part of `valid`, registration doesn't block on these.
+  const [regionId, setRegionId] = useState('')
+  const [districtId, setDistrictId] = useState('')
   const { isSubmitting, authError, clearAuthError } = useAuth()
   const t = useT()
   const valid = fullName.trim().length > 0 && dateOfBirth.length > 0
 
-  const submit = () => { if (valid) onRegister(fullName.trim(), dateOfBirth) }
+  const submit = () => { if (valid) onRegister(fullName.trim(), dateOfBirth, regionId, districtId) }
 
   return (
     <div className="flex flex-col h-full">
@@ -332,6 +336,12 @@ function RegisterStep({ phone, onRegister, onBack }: {
           </div>
         </div>
 
+        <RegionDistrictPicker
+          regionId={regionId}
+          districtId={districtId}
+          onChange={(r, d) => { setRegionId(r); setDistrictId(d); if (authError) clearAuthError() }}
+        />
+
         {authError && <p className="text-[12px] text-destructive mt-3">{authError}</p>}
         </div>
       </div>
@@ -377,9 +387,9 @@ export function LoginPage() {
     } catch { /* surfaced via authError */ }
   }
 
-  const handleRegister = async (fullName: string, dateOfBirth: string) => {
+  const handleRegister = async (fullName: string, dateOfBirth: string, regionId: string, districtId: string) => {
     try {
-      await register(phone, registrationTicket, fullName, dateOfBirth)
+      await register(phone, registrationTicket, fullName, dateOfBirth, regionId, districtId)
       // On success the session is persisted → AuthGate redirects to /home.
     } catch { /* surfaced via authError */ }
   }

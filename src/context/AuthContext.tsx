@@ -14,7 +14,7 @@ import {
   register as apiRegister,
   sendOtp as apiSendOtp,
   updateAppLanguage as apiUpdateAppLanguage,
-  updateFullName as apiUpdateFullName,
+  updateProfile as apiUpdateProfile,
   uploadAvatar as apiUploadAvatar,
   verifyOtp as apiVerifyOtp,
   UserNotFoundError,
@@ -83,10 +83,13 @@ interface AuthContextValue {
   /** Step 3 (only for a phone verifyOtp didn't recognize): create the
    *  account using the ticket verifyOtp's outcome carried, then persist the
    *  session exactly like a normal login. */
-  register: (phone: string, registrationTicket: string, fullName: string, dateOfBirth: string) => Promise<void>
+  register: (
+    phone: string, registrationTicket: string, fullName: string, dateOfBirth: string,
+    regionId: string, districtId: string,
+  ) => Promise<void>
   /** Upload a new avatar; merges the result into the persisted session. */
   uploadAvatar: (file: File) => Promise<void>
-  updateFullName: (fullName: string) => Promise<void>
+  updateProfile: (fullName: string, regionId: string, districtId: string) => Promise<void>
   updateAppLanguage: (lang: Lang) => Promise<void>
   logout: () => void
   /**
@@ -109,7 +112,7 @@ const AuthContext = createContext<AuthContextValue>({
   verifyOtp: async () => ({ status: 'ok' }),
   register: async () => {},
   uploadAvatar: async () => {},
-  updateFullName: async () => {},
+  updateProfile: async () => {},
   updateAppLanguage: async () => {},
   logout: () => {},
   justSignedIn: false,
@@ -207,9 +210,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     })
 
-  const register = (phone: string, registrationTicket: string, fullName: string, dateOfBirth: string) =>
+  const register = (
+    phone: string, registrationTicket: string, fullName: string, dateOfBirth: string,
+    regionId: string, districtId: string,
+  ) =>
     run(async () => {
-      const result = await apiRegister(phone, registrationTicket, fullName, dateOfBirth)
+      const result = await apiRegister(phone, registrationTicket, fullName, dateOfBirth, regionId, districtId)
       const user = toUserProfile(result.user)
       setSession(persistSession(result, user))
       window.dispatchEvent(new Event('pravai-authenticated'))
@@ -222,9 +228,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession((prev) => (prev ? persistSession({ access_token: prev.token, refresh_token: prev.refreshToken ?? '' }, toUserProfileFromMe(me)) : prev))
     })
 
-  const updateFullName = (fullName: string) =>
+  const updateProfile = (fullName: string, regionId: string, districtId: string) =>
     run(async () => {
-      const me = await apiUpdateFullName(fullName)
+      const me = await apiUpdateProfile(fullName, regionId, districtId)
       setSession((prev) => (prev ? persistSession({ access_token: prev.token, refresh_token: prev.refreshToken ?? '' }, toUserProfileFromMe(me)) : prev))
     })
 
@@ -266,7 +272,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         verifyOtp,
         register,
         uploadAvatar,
-        updateFullName,
+        updateProfile,
         updateAppLanguage,
         logout,
         justSignedIn,

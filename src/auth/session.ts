@@ -27,6 +27,8 @@ export interface BackendUser {
   phone: string
   full_name: string | null
   date_of_birth: string | null
+  region_id: string | null
+  district_id: string | null
 }
 
 export interface VerifyOtpResult extends TokenPair {
@@ -43,7 +45,10 @@ export interface UserNotFoundBody {
   registration_ticket: string
 }
 
-/** GET /api/v1/users/me's full shape (a superset of BackendUser). */
+/** GET /api/v1/users/me's full shape (a superset of BackendUser).
+ *  region_name/district_name are already resolved server-side to the
+ *  caller's language -- a display string, not something to re-resolve
+ *  client-side. */
 export interface MeResponse {
   id: string
   phone: string
@@ -51,6 +56,10 @@ export interface MeResponse {
   date_of_birth: string | null
   avatar_url: string | null
   app_language: Lang
+  region_id: string | null
+  region_name: string | null
+  district_id: string | null
+  district_name: string | null
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -64,6 +73,10 @@ export const toUserProfile = (u: BackendUser): UserProfile => ({
   dateOfBirth: u.date_of_birth,
   avatarUrl: null,
   appLanguage: 'uz',
+  regionId: u.region_id,
+  regionName: null,
+  districtId: u.district_id,
+  districtName: null,
 })
 
 /** Map GET /users/me's fuller shape into UserProfile. */
@@ -74,6 +87,10 @@ export const toUserProfileFromMe = (u: MeResponse): UserProfile => ({
   dateOfBirth: u.date_of_birth,
   avatarUrl: u.avatar_url,
   appLanguage: u.app_language,
+  regionId: u.region_id,
+  regionName: u.region_name,
+  districtId: u.district_id,
+  districtName: u.district_name,
 })
 
 export const persistSession = (token: TokenPair, user: UserProfile): AuthSession => {

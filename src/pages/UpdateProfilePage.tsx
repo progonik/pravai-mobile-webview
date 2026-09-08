@@ -1,14 +1,17 @@
 import { useRef, useState } from 'react'
 import { Camera, Loader2, UserCircle } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
+import { RegionDistrictPicker } from '../components/RegionDistrictPicker'
 import { SmoothImage } from '../components/SmoothImage'
 import { useAuth } from '../context/AuthContext'
 import { useT } from '../context/LocaleContext'
 
 export function UpdateProfilePage({ onDone }: { onDone: () => void }) {
-  const { profile, updateFullName, uploadAvatar, isSubmitting, authError, clearAuthError } = useAuth()
+  const { profile, updateProfile, uploadAvatar, isSubmitting, authError, clearAuthError } = useAuth()
   const t = useT()
   const [name, setName] = useState(profile?.fullName ?? '')
+  const [regionId, setRegionId] = useState(profile?.regionId ?? '')
+  const [districtId, setDistrictId] = useState(profile?.districtId ?? '')
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -31,7 +34,7 @@ export function UpdateProfilePage({ onDone }: { onDone: () => void }) {
   async function handleSave() {
     if (!name.trim()) return
     try {
-      await updateFullName(name.trim())
+      await updateProfile(name.trim(), regionId, districtId)
       onDone()
     } catch { /* surfaced via authError */ }
   }
@@ -81,6 +84,12 @@ export function UpdateProfilePage({ onDone }: { onDone: () => void }) {
             className="mt-2 w-full px-4 py-3.5 bg-card rounded-2xl text-[15px] font-medium text-foreground border border-border shadow-card focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all placeholder:text-muted-foreground/60 placeholder:font-normal"
           />
         </div>
+
+        <RegionDistrictPicker
+          regionId={regionId}
+          districtId={districtId}
+          onChange={(r, d) => { setRegionId(r); setDistrictId(d); if (authError) clearAuthError() }}
+        />
 
         {authError && <p className="text-[12px] text-destructive mt-3 ml-1">{authError}</p>}
       </div>
