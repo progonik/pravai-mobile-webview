@@ -17,6 +17,10 @@ const tabs = [
  * shows on all four sides and the blur reads as a chrome "island" rather than
  * painted-on chrome. Absolutely positioned (see AppShell): content scrolls
  * full-bleed underneath it, which is what makes the blur visible at all.
+ *
+ * The active tab additionally gets its own small pill behind the icon
+ * (GitHub-app style), rather than just a color/weight tint -- it needs to
+ * read at a glance, not just on close inspection.
  */
 export function AppTabbar() {
   const navigate = useNavigate()
@@ -51,11 +55,17 @@ export function AppTabbar() {
             aria-current={isActive ? 'page' : undefined}
             className="press-tab flex-1 h-full flex flex-col items-center justify-center gap-0.5"
           >
-            <Icon
-              size={22}
-              strokeWidth={isActive ? 2.2 : 1.8}
-              className={isActive ? 'text-primary' : 'text-chrome-foreground/55'}
-            />
+            <span
+              className={`flex items-center justify-center rounded-full transition-colors ${
+                isActive ? 'bg-primary/15 px-3 py-1' : 'px-3 py-1'
+              }`}
+            >
+              <Icon
+                size={22}
+                strokeWidth={isActive ? 2.2 : 1.8}
+                className={isActive ? 'text-primary' : 'text-chrome-foreground/55'}
+              />
+            </span>
             <span
               className={`text-[10px] leading-none font-semibold ${
                 isActive ? 'text-primary' : 'text-chrome-foreground/55'
