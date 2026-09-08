@@ -196,20 +196,9 @@ export function QuizPage() {
 
             {feedback && (
               <div className="rounded-2xl border border-border bg-card p-4 mt-4">
-                <div className="flex items-center justify-between gap-3 mb-1">
-                  <p className={`text-[13px] font-bold ${feedback.isCorrect ? 'text-success' : 'text-destructive'}`}>
-                    {feedback.isCorrect ? t('quiz.correct') : t('quiz.incorrect')}
-                  </p>
-                  {/* Practice only: exam-mode mistakes already cost extra
-                      questions as their own consequence, and "why" there
-                      would just repeat what quiz.intro.examRules already
-                      explained. */}
-                  {!feedback.isCorrect && attempt?.mode === 'practice' && (
-                    <button onClick={handleWhy} className="press text-[12px] font-bold text-primary-hover shrink-0">
-                      {t('quiz.why')}
-                    </button>
-                  )}
-                </div>
+                <p className={`text-[13px] font-bold mb-1 ${feedback.isCorrect ? 'text-success' : 'text-destructive'}`}>
+                  {feedback.isCorrect ? t('quiz.correct') : t('quiz.incorrect')}
+                </p>
                 <p className="text-[13px] text-muted-foreground leading-relaxed">{feedback.explanation}</p>
               </div>
             )}
@@ -232,10 +221,21 @@ export function QuizPage() {
       </div>
 
       {feedback && (
-        <div className="px-6 pt-3 shrink-0" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 22px)' }}>
+        <div className="px-6 pt-3 shrink-0 flex items-center gap-3" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 22px)' }}>
+          {/* Practice only: exam-mode mistakes already cost extra questions
+              as their own consequence, and "why" there would just repeat
+              what quiz.intro.examRules already explained. */}
+          {!feedback.isCorrect && attempt?.mode === 'practice' && (
+            <button
+              onClick={handleWhy}
+              className="press shrink-0 rounded-full border border-primary/30 bg-primary/10 text-primary-hover px-5 py-4 text-[15px] font-semibold"
+            >
+              {t('quiz.why')}
+            </button>
+          )}
           <button
             onClick={handleNext}
-            className="press w-full bg-primary text-primary-foreground rounded-full py-4 text-[15px] font-semibold shadow-brand"
+            className="press flex-1 bg-primary text-primary-foreground rounded-full py-4 text-[15px] font-semibold shadow-brand"
           >
             {pendingNext === null ? t('quiz.finish') : t('quiz.next')}
           </button>
