@@ -127,3 +127,39 @@ export async function submitAnswer(
     option_id: optionId,
   })
 }
+
+// ─── Home ───────────────────────────────────────────────────────────────────
+//
+//   GET /exam/home → HomeSummary
+//
+// One round trip for everything the Home tab shows. Each field is null
+// rather than a zero/empty placeholder when there's nothing to show yet
+// (no in-progress attempt, no daily challenge scheduled today, not enough
+// answered questions for a meaningful weak-topic or readiness signal) --
+// render that card's empty state, not a "0%" or blank title.
+
+export interface ResumeAttempt {
+  id: string
+  template_id: string
+  template_title: string
+  mode: string
+  answered_count: number
+}
+
+export interface WeakTopic {
+  topic_id: string
+  topic_name: string
+  answered_count: number
+  mistake_count: number
+}
+
+export interface HomeSummary {
+  resume_attempt: ResumeAttempt | null
+  daily_challenge: TemplateSummary | null
+  weak_topic: WeakTopic | null
+  readiness_percent: number | null
+}
+
+export async function getHomeSummary(): Promise<HomeSummary> {
+  return request.get('/api/v1/exam/home')
+}

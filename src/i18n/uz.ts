@@ -29,6 +29,10 @@ export const uz: Record<TranslationKey, string> = {
   'home.greeting': 'Xush kelibsiz',
   'home.placeholderTitle': 'Mashq paneli tez orada',
   'home.placeholderBody': "Bir nechta mashq testini topshirganingizdan so'ng, so'nggi urinishlar va mavzular bo'yicha progress shu yerda ko'rinadi.",
+  'home.continue': 'Davom ettirish',
+  'home.answeredCount': '{count} ta javob berildi',
+  'home.dailyChallenge': 'Kunlik topshiriq',
+  'home.weakTopic': "Mashq qilish kerak",
 
   'tab.home': 'Bosh sahifa',
   'tab.tests': 'Testlar',

@@ -27,6 +27,10 @@ export const en = {
   'home.greeting': 'Welcome back',
   'home.placeholderTitle': 'Your practice dashboard is on its way',
   'home.placeholderBody': "Recent attempts and progress by topic will show up here once you've taken a few practice tests.",
+  'home.continue': 'Continue',
+  'home.answeredCount': '{count} answered',
+  'home.dailyChallenge': "Today's challenge",
+  'home.weakTopic': 'Needs practice',
 
   'tab.home': 'Home',
   'tab.tests': 'Tests',

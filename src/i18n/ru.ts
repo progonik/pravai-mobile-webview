@@ -29,6 +29,10 @@ export const ru: Record<TranslationKey, string> = {
   'home.greeting': 'С возвращением',
   'home.placeholderTitle': 'Панель тренировок скоро появится',
   'home.placeholderBody': 'Здесь появятся последние попытки и прогресс по темам, как только вы пройдёте несколько тренировочных тестов.',
+  'home.continue': 'Продолжить',
+  'home.answeredCount': 'Отвечено: {count}',
+  'home.dailyChallenge': 'Задание дня',
+  'home.weakTopic': 'Нужна практика',
 
   'tab.home': 'Главная',
   'tab.tests': 'Тесты',
