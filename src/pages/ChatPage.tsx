@@ -52,7 +52,12 @@ export function ChatPage() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages])
 
-  const send = async (text: string, imageUrl?: string) => {
+  // hideUserBubble: the "why was this wrong" prompt is composed from raw
+  // question/answer text for the model's benefit, not something a human
+  // would type -- it's still the real message sent (and the one Gemini
+  // sees and the one persisted for conversation context), just not
+  // rendered as if the user had typed that wall of text themselves.
+  const send = async (text: string, imageUrl?: string, hideUserBubble = false) => {
     const trimmed = text.trim()
     if (!trimmed || sending) return
     setSending(true)
@@ -60,7 +65,7 @@ export function ChatPage() {
     const assistantId = `assistant-${crypto.randomUUID()}`
     setMessages((prev) => [
       ...prev,
-      { id: `user-${crypto.randomUUID()}`, role: 'user', content: trimmed },
+      ...(hideUserBubble ? [] : [{ id: `user-${crypto.randomUUID()}`, role: 'user' as const, content: trimmed }]),
       { id: assistantId, role: 'assistant', content: '' },
     ])
     setInput('')
@@ -89,7 +94,7 @@ export function ChatPage() {
       const e = location.state.explain
       // Deferred a tick so `send`'s setSending(true) isn't called
       // synchronously from within the effect body itself.
-      queueMicrotask(() => { void send(buildExplainPrompt(e, t), e.imageUrl ?? undefined) })
+      queueMicrotask(() => { void send(buildExplainPrompt(e, t), e.imageUrl ?? undefined, true) })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
