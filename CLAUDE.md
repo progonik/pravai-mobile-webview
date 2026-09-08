@@ -32,17 +32,30 @@ pair -- independent of whether any template uses one yet, so a type an
 admin just added shows up immediately. Tapping one pushes `TestTypePage`
 (`/tests/:mode`), which fetches `GET /exam/templates` and filters
 client-side by that type's code, showing an empty state rather than
-nothing if no template exists for it yet. See `src/api/examService.ts`.
+nothing if no template exists for it yet.
 
-**Placeholder only** (`HomePage`, `QuizPage`, `ResultPage`, `ChatPage` all
-render a "coming soon" card): these need backend work first.
-Specifically, the backend currently exposes:
-- `GET /exam/question-types` and `GET /exam/templates` (list, used by
-  `TestsPage`/`TestTypePage`) and `POST /exam/attempts` (start/resume) +
-  `POST /exam/attempts/:id/answer` -- but no way to *list*
-  topics/license categories from a non-admin token yet (only needed for
-  filter dropdowns, not for the type/template list). The admin-panel
-  equivalents exist under `/api/v1/admin/*` but require an admin role.
+The full attempt-taking flow is also real and working: `QuizIntroPage`
+(`/quiz/:templateId/intro`), `QuizPage` (`/quiz/:templateId`), and
+`ResultPage` (`/result`, state-driven -- see below). "practice" is the one
+mode value the client branches on (`TestTypePage.templateHref`): tapping a
+practice template's card -- already topic-scoped, that tap *is* "choose a
+theme" -- starts straight into questions; every other mode goes through the
+intro screen first, since those represent a whole test/session rather than
+a topic pick. This mirrors the backend's own convention of treating "exam"
+as the one mode with real logic (mistake-limit scoring) and everything else
+generically -- the client's one special-cased literal is "practice",
+the backend's is "exam". `QuizPage` starts (or resumes, per the backend's
+idempotent `StartOrResumeAttempt`) an attempt and walks question-by-question
+via `submitAnswer` until `next_question` comes back null, then navigates to
+`/result` with the final `attempt` object as router state -- there is no
+GET-attempt-by-id endpoint, so `ResultPage` only has anything to show when
+reached that way (a direct link/reload shows a fallback, not a blank
+screen). See `src/api/examService.ts` for the full request/response shapes.
+
+**Placeholder only** (`HomePage`, `ChatPage` render a "coming soon" card):
+- `HomePage` needs a mobile-facing attempt-history/progress endpoint that
+  doesn't exist yet (the admin-only `AttemptSummary`/`ListUserAttempts`
+  usecase exists server-side but isn't wired to a non-admin route).
 - No chat/explanation endpoint exists for the AI-tutor screen at all.
 
 Do not wire a screen to admin endpoints as a workaround -- add the missing

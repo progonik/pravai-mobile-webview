@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
-import { Clock, ListChecks, Shield } from 'lucide-react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { ChevronRight, Clock, ListChecks, Shield } from 'lucide-react'
 import { listQuestionTypes, listTemplates, type TemplateSummary } from '../api/examService'
 import { STALE_TIME } from '../api/queryClient'
 import { PageHeader } from '../components/PageHeader'
@@ -15,18 +15,40 @@ function formatTimeLimit(seconds: number | null, t: Translate): string {
   return `${m}:${String(s).padStart(2, '0')}`
 }
 
+/**
+ * "practice" is the one mode this app still branches on client-side (the
+ * backend already treats "exam" specially in its own scoring logic, so
+ * this mirrors that convention rather than inventing a new one): a
+ * practice template is already scoped to a single topic (its card shows
+ * that topic_name), so tapping it starts straight into the questions --
+ * that tap *is* "choose a theme". Every other mode -- exam, daily
+ * challenge, and any future type -- gets an explain-then-start screen
+ * first, since those represent a whole test/session rather than a
+ * pick-a-topic list.
+ */
+function templateHref(template: TemplateSummary): string {
+  return template.mode === 'practice' ? `/quiz/${template.id}` : `/quiz/${template.id}/intro`
+}
+
 function TemplateCard({ template }: { template: TemplateSummary }) {
   const t = useT()
+  const navigate = useNavigate()
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 flex flex-col gap-2.5">
+    <button
+      onClick={() => navigate(templateHref(template))}
+      className="press-row w-full rounded-2xl border border-border bg-card p-4 flex flex-col gap-2.5 text-left"
+    >
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[15px] font-bold text-foreground leading-tight">{template.title}</p>
-        {template.is_official_ticket && (
-          <span className="shrink-0 flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 rounded-full px-2 py-1">
-            <Shield size={11} />
-            {t('tests.officialTicket')}
-          </span>
-        )}
+        <p className="text-[15px] font-bold text-foreground leading-tight flex-1">{template.title}</p>
+        <div className="flex items-center gap-2 shrink-0">
+          {template.is_official_ticket && (
+            <span className="flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 rounded-full px-2 py-1">
+              <Shield size={11} />
+              {t('tests.officialTicket')}
+            </span>
+          )}
+          <ChevronRight size={16} className="text-muted-foreground" />
+        </div>
       </div>
       {template.topic_name && (
         <p className="text-[12px] text-muted-foreground">{template.topic_name}</p>
@@ -41,7 +63,7 @@ function TemplateCard({ template }: { template: TemplateSummary }) {
           {formatTimeLimit(template.time_limit_seconds, t)}
         </span>
       </div>
-    </div>
+    </button>
   )
 }
 

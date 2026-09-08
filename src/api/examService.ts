@@ -50,3 +50,80 @@ export interface QuestionType {
 export async function listQuestionTypes(): Promise<QuestionType[]> {
   return request.get('/api/v1/exam/question-types')
 }
+
+// ─── Attempt-taking ─────────────────────────────────────────────────────────
+//
+//   POST /exam/attempts             { template_id }                     → StartAttemptResult
+//   POST /exam/attempts/{id}/answer { question_id, option_id }          → SubmitAnswerResult
+//
+// Starting an attempt is idempotent per (user, template): calling it again
+// for a template with an already-in-progress attempt resumes it (same
+// attempt id, wherever the user left off) instead of creating a duplicate --
+// QuizPage relies on this to "just start" on mount without tracking whether
+// an attempt already exists. All of an attempt's non-mistake-penalty
+// questions are drawn and frozen at start time; `attempt.total_planned` can
+// still grow at runtime in exam mode (+5 per mistake, up to 2 mistakes
+// before a 3rd fails the attempt) -- always read the *current* response's
+// `attempt`, never the static template.questions_per_attempt, once an
+// attempt is underway.
+
+export interface AttemptState {
+  id: string
+  /** Mirrors TemplateSummary.mode -- "exam" is the one value with real
+   *  pass/fail + mistake-limit scoring; everything else behaves like an
+   *  ungraded practice set (see the backend's Attempt.SubmitAnswer). */
+  mode: string
+  status: 'in_progress' | 'completed' | 'abandoned'
+  total_planned: number
+  answered_count: number
+  correct_count: number
+  mistake_count: number
+  extra_questions_used: number
+  /** Only ever set (non-null) for mode "exam", and only once finished. */
+  passed: boolean | null
+}
+
+export interface QuizOption {
+  id: string
+  body: string
+}
+
+export interface QuizQuestion {
+  id: string
+  image_urls: string[]
+  body: string
+  options: QuizOption[]
+}
+
+export interface StartAttemptResult {
+  attempt: AttemptState
+  /** Null only if the template's question pool is empty -- see
+   *  ErrTemplateEmpty, surfaced as a 409 the caller should treat as "no
+   *  questions available yet", not a generic failure. */
+  question: QuizQuestion | null
+}
+
+export interface SubmitAnswerResult {
+  is_correct: boolean
+  correct_option_id: string
+  explanation: string
+  attempt: AttemptState
+  /** Null once the attempt is finished -- the one signal that the quiz
+   *  loop should stop and hand off to the result screen. */
+  next_question: QuizQuestion | null
+}
+
+export async function startAttempt(templateId: string): Promise<StartAttemptResult> {
+  return request.post('/api/v1/exam/attempts', { template_id: templateId })
+}
+
+export async function submitAnswer(
+  attemptId: string,
+  questionId: string,
+  optionId: string | null,
+): Promise<SubmitAnswerResult> {
+  return request.post(`/api/v1/exam/attempts/${attemptId}/answer`, {
+    question_id: questionId,
+    option_id: optionId,
+  })
+}

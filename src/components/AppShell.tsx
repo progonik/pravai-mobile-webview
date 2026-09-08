@@ -7,6 +7,7 @@ import { WelcomeScreen } from './WelcomeScreen'
 import { HomePage } from '../pages/HomePage'
 import { TestsPage } from '../pages/TestsPage'
 import { TestTypePage } from '../pages/TestTypePage'
+import { QuizIntroPage } from '../pages/QuizIntroPage'
 import { QuizPage } from '../pages/QuizPage'
 import { ResultPage } from '../pages/ResultPage'
 import { ChatPage } from '../pages/ChatPage'
@@ -82,8 +83,9 @@ export function AppShell() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/tests" element={<TestsPage />} />
           <Route path="/tests/:mode" element={<TestTypePage />} />
-          <Route path="/quiz/:attemptId" element={<QuizPage />} />
-          <Route path="/result/:attemptId" element={<ResultPage />} />
+          <Route path="/quiz/:templateId/intro" element={<QuizIntroPage />} />
+          <Route path="/quiz/:templateId" element={<QuizPage />} />
+          <Route path="/result" element={<ResultPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/info" element={<MyInfoPage />} />
