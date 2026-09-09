@@ -9,8 +9,8 @@ best streak keeps the five-day milestone earned after a gap.
 
 Tests now includes a recommended practice card, resume action, searchable dynamic
 test types, template counts, and a tutor entry point. Recommendations open a
-matching available practice template when possible; otherwise they draft a
-targeted tutor question. Admin-defined test types remain visible.
+topic's mistake-review overview when unresolved mistakes exist. Admin-defined
+test types remain visible. A separate link opens the topic-grouped mistakes library.
 
 Chat opens with personalized draft suggestions: weak-topic practice, latest-result
 review, a concrete mistake, and a ten-minute plan. Drafts cite actual counts and
@@ -52,8 +52,13 @@ See public/images/LIGHT_ARTWORK.md for generation prompts and asset provenance.
   until today ends. Practice points equal 10 per distinct completed day, so five
   days earn 50 points. Points are informational, not a redeemable balance.
 - Rating opens personal practice points, not a global leaderboard.
-- Mistakes jumps to topic performance. Topic rows and the tutor recommendation
-  prefill the AI chat; the user sends the draft. Quick rules opens a tutor draft.
+- Mistakes and View all open /mistakes. Weak-topic rows and the tutor banner's
+  primary action open /mistakes/:topicId, then an explicit start action opens
+  the fixed review quiz. AI help is a separate secondary action. Quick rules
+  still opens a tutor draft.
+- Reviews show unresolved question counts separately from historical accuracy.
+  Explanations follow every submitted answer; results offer remaining-mistake
+  review or regular practice. Complete a review to update remaining mistakes.
 - The notification bell shows unread inbox counts and opens `/notifications`.
   Opening a notification marks it read and follows its allowlisted destination.
 - Profile awards load from GET /api/v1/awards, including localized labels and
@@ -61,6 +66,9 @@ See public/images/LIGHT_ARTWORK.md for generation prompts and asset provenance.
 
 Backend changes must be deployed with the frontend to show real streaks.
 Awards and notifications require backend migration 000030_admin_engagement.
+Mistake reviews require migration 000031_mistake_reviews. The backend freezes up
+to 50 eligible questions per session; revisiting a topic resumes its active review.
+Unavailable questions and questions in unfinished tests cannot be reviewed.
 Delivery is in-app only, not OS push. Existing history resolves challenge mode
 from the template; edits to a template's mode can affect the derived points.
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { startMistakeReview, submitMistakeReview, useMistakeTopics } from '../api/mistakeService'
 import type { AxiosError } from 'axios'
 import { Check, X } from 'lucide-react'
 import {
@@ -31,7 +32,9 @@ interface Feedback {
  * mid-attempt (+5 questions per mistake, see QuizIntroPage's rules copy).
  */
 export function QuizPage() {
-  const { templateId } = useParams<{ templateId: string }>()
+  const { templateId, topicId } = useParams<{ templateId: string; topicId: string }>()
+  const client = useQueryClient()
+  const reviewTopics = useMistakeTopics(!!topicId)
   const navigate = useNavigate()
   const t = useT()
 
@@ -41,6 +44,7 @@ export function QuizPage() {
     staleTime: STALE_TIME.feed,
   })
   const template = templates?.find((tpl) => tpl.id === templateId)
+  const title = topicId ? reviewTopics.data?.find(topic => topic.topic_id === topicId)?.topic_name ?? t('review.title') : template?.title ?? ''
 
   const [attempt, setAttempt] = useState<AttemptState | null>(null)
   const [question, setQuestion] = useState<QuizQuestion | null>(null)
@@ -59,9 +63,10 @@ export function QuizPage() {
   // no reset-before-fetch is needed, the initial state values already cover
   // "loading, no error" for that one run.
   useEffect(() => {
-    if (!templateId) return
+    if (!templateId && !topicId) return
     let cancelled = false
-    startAttempt(templateId)
+    const request = topicId ? startMistakeReview(topicId) : startAttempt(templateId!)
+    request
       .then((result) => {
         if (cancelled) return
         setAttempt(result.attempt)
@@ -74,18 +79,22 @@ export function QuizPage() {
         // 409 = ErrTemplateEmpty (no questions match this template's
         // topic/license-category pool yet) -- worth telling apart from a
         // generic failure, since "try again" is bad advice for it.
-        setError(err.response?.status === 409 ? t('quiz.noQuestions') : t('quiz.startFailed'))
+        setError(err.response?.status === 409 ? t(topicId ? 'review.refresh' : 'quiz.noQuestions') : t('quiz.startFailed'))
         setLoading(false)
       })
     return () => { cancelled = true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [templateId])
+  }, [templateId, topicId])
 
   const handleAnswer = async (optionId: string | null) => {
     if (!attempt || !question || feedback || submitting) return
     setSubmitting(true)
     try {
-      const result = await submitAnswer(attempt.id, question.id, optionId)
+      const result = await (topicId ? submitMistakeReview(attempt.id, question.id, optionId) : submitAnswer(attempt.id, question.id, optionId))
+      setError('')
+      if (result.attempt.status === 'completed') {
+        void client.invalidateQueries({ queryKey: ['exam'] })
+      }
       setAttempt(result.attempt)
       setFeedback({
         isCorrect: result.is_correct,
@@ -120,7 +129,7 @@ export function QuizPage() {
   const handleNext = () => {
     if (pendingNext === undefined || !attempt) return
     if (pendingNext === null) {
-      navigate('/result', { state: { attempt, templateTitle: template?.title ?? '' } })
+      navigate('/result', { state: { attempt, templateTitle: title, reviewTopicId: topicId } })
       return
     }
     setQuestion(pendingNext)
@@ -131,7 +140,7 @@ export function QuizPage() {
   return (
     <div className="relative flex flex-col h-full bg-background">
       <PageHeader
-        title={template?.title ?? ''}
+        title={title}
         right={
           attempt && (
             <span className="font-mono numeric text-[13px] font-semibold text-muted-foreground shrink-0">
@@ -153,6 +162,7 @@ export function QuizPage() {
         ) : error && !question ? (
           <div className="rounded-2xl border border-border bg-card p-5">
             <p className="text-[13px] text-muted-foreground leading-relaxed">{error}</p>
+            {topicId && <button className="home-start" onClick={() => navigate(`/mistakes/${topicId}`, { replace: true })}>{t('review.back')}</button>}
           </div>
         ) : question && (
           <>
@@ -225,7 +235,7 @@ export function QuizPage() {
           {/* Practice only: exam-mode mistakes already cost extra questions
               as their own consequence, and "why" there would just repeat
               what quiz.intro.examRules already explained. */}
-          {!feedback.isCorrect && attempt?.mode === 'practice' && (
+          {!feedback.isCorrect && (attempt?.mode === 'practice' || !!topicId) && (
             <button
               onClick={handleWhy}
               className="press flex-1 rounded-full border border-primary/30 bg-primary/10 text-primary-hover py-4 text-[15px] font-semibold"

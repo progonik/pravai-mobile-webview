@@ -5,6 +5,7 @@ import { ChevronRight, PlayCircle, X } from 'lucide-react'
 import { getHomeSummary, type WeakTopic } from '../api/examService'
 import { Skeleton } from '../components/Skeleton'
 import { getNotifications } from '../api/engagementService'
+import { useMistakeTopics } from '../api/mistakeService'
 import { DesignIcon, type DesignIconName } from '../components/DesignIcon'
 import { useAuth } from '../context/AuthContext'
 import { useT, useLocale, type Translate } from '../context/LocaleContext'
@@ -30,15 +31,15 @@ function ReadinessRing({ percent }: { percent: number }) {
   </div>
 }
 
-function WeakTopicRow({ topic, t, index, onClick }: { topic: WeakTopic; t: Translate; index: number; onClick: () => void }) {
+function WeakTopicRow({ topic, t, index, onClick, remaining }: { topic: WeakTopic; t: Translate; index: number; onClick: () => void; remaining?: number }) {
   const accuracy = topic.answered_count > 0 ? Math.max(0, Math.min(100, Math.round((topic.answered_count - topic.mistake_count) / topic.answered_count * 100))) : 0
   const tone = accuracy < 60 ? 'attention' : accuracy < 80 ? 'practice' : 'good'
   const icons: DesignIconName[] = ['turn', 'crossroad', 'warning', 'speed']
   return <button className="weak-topic-row" onClick={onClick}>
     <DesignIcon name={icons[index % icons.length]} />
-    <span className="weak-topic-name">{topic.topic_name}</span>
+    <span className="weak-topic-name">{topic.topic_name}<small className="review-row-count">{remaining === undefined ? '—' : t('review.count', { count: remaining })}</small></span>
     <span className={`topic-meter ${tone}`}><span style={{ width: `${accuracy}%` }} /></span>
-    <span className="topic-percent">{accuracy}%</span>
+    <span className="topic-percent" title={t('review.accuracy')}>{accuracy}%</span>
     <span className={`topic-status ${tone}`}>{t(`home.status.${tone}`)}</span>
     <ChevronRight size={17} />
   </button>
@@ -50,7 +51,7 @@ export function HomePage() {
     const t = useT()
   const { lang } = useLocale()
   const [tipDismissed, setTipDismissed] = useState(false)
-  const [allTopics, setAllTopics] = useState(false)
+  const reviews = useMistakeTopics()
   const { data: home, isPending, isError, refetch } = useQuery({ queryKey: ['exam', 'home'], queryFn: getHomeSummary })
   const { data: inbox } = useQuery({ queryKey: ['notifications', 1], queryFn: () => getNotifications(1), refetchInterval: 30000 })
   const worstTopic = home?.weak_topics[0]
@@ -58,7 +59,7 @@ export function HomePage() {
   const openTutor = (topic: string) => navigate('/chat', { state: { prompt: t('home.tutorPrompt', { topic }) } })
   const tiles: { icon: DesignIconName; title: Parameters<Translate>[0]; subtitle: Parameters<Translate>[0]; tone: string; action: () => void }[] = [
     { icon: 'target', title: 'home.tileExamSim', subtitle: 'home.examSubtitle', tone: 'blue', action: () => navigate('/tests/exam') },
-    { icon: 'pin', title: 'home.tileMistakes', subtitle: 'home.mistakesSubtitle', tone: 'purple', action: () => document.getElementById('weak-topics')?.scrollIntoView({ behavior: 'smooth', block: 'center' }) },
+    { icon: 'pin', title: 'home.tileMistakes', subtitle: 'home.mistakesSubtitle', tone: 'purple', action: () => navigate('/mistakes') },
     { icon: 'star', title: 'home.tileRating', subtitle: 'home.ratingSubtitle', tone: 'gold', action: () => (document.getElementById('rating-dialog') as HTMLDialogElement | null)?.showModal() },
     { icon: 'book', title: 'home.tileRules', subtitle: 'home.rulesSubtitle', tone: 'teal', action: () => openTutor(t('home.tileRules')) },
   ]
@@ -92,10 +93,10 @@ export function HomePage() {
     </section>}
     <div className="feature-grid">{tiles.map(tile => <button key={tile.icon} className="design-card feature-card" onClick={tile.action}><span className={`icon-medallion ${tile.tone}`}><DesignIcon name={tile.icon} /></span><h2>{t(tile.title)}</h2><p>{t(tile.subtitle)}</p></button>)}</div>
     <section className="design-card weak-topics" id="weak-topics">
-      <div className="weak-heading"><span className="icon-medallion teal"><DesignIcon name="chart" /></span><div><h2>{t('home.weakTopics')}</h2><p>{t('home.weakTopicsSubtitle')}</p></div>{!!home?.weak_topics.length && <button onClick={() => setAllTopics(!allTopics)}>{t(allTopics ? 'home.showLess' : 'home.viewAll')}<ChevronRight size={17} /></button>}</div>
-      {home?.weak_topics.length ? home.weak_topics.slice(0, allTopics ? undefined : 4).map((topic, index) => <WeakTopicRow key={topic.topic_id} topic={topic} t={t} index={index} onClick={() => openTutor(topic.topic_name)} />) : <p className="weak-empty">{isPending ? t('home.loading') : t('home.placeholderBody')}</p>}
+      <div className="weak-heading"><span className="icon-medallion teal"><DesignIcon name="chart" /></span><div><h2>{t('home.weakTopics')}</h2><p>{t('review.accuracy')}</p></div><button onClick={() => navigate('/mistakes')}>{t('home.viewAll')}<ChevronRight size={17} /></button></div>
+      {home?.weak_topics.length ? home.weak_topics.slice(0, 4).map((topic, index) => <WeakTopicRow key={topic.topic_id} topic={topic} t={t} index={index} remaining={reviews.data ? reviews.data.find(item => item.topic_id === topic.topic_id)?.remaining_count ?? 0 : undefined} onClick={() => navigate(`/mistakes/${topic.topic_id}`)} />) : <p className="weak-empty">{isPending ? t('home.loading') : t('home.placeholderBody')}</p>}
     </section>
-    {!tipDismissed && <aside className="tutor-banner"><DesignIcon name="tutor" size={96} /><div className="tutor-copy"><h2>{t('home.tutorRecommendation')}</h2><p>{worstTopic ? t('home.aiTip', { topic: worstTopic.topic_name }) : t('home.tutorWelcome')}</p></div><button className="tutor-open" onClick={() => worstTopic ? openTutor(worstTopic.topic_name) : navigate('/chat')}>{t('home.openTutor')}<ChevronRight size={20} /></button><button className="tutor-dismiss" onClick={() => setTipDismissed(true)} aria-label={t('home.dismiss')}><X size={14} /></button></aside>}
+    {!tipDismissed && <aside className="tutor-banner"><DesignIcon name="tutor" size={96} /><div className="tutor-copy"><h2>{t('home.tutorRecommendation')}</h2><p>{worstTopic ? t('home.aiTip', { topic: worstTopic.topic_name }) : t('home.tutorWelcome')}</p><button className="review-ai-link" onClick={() => worstTopic ? openTutor(worstTopic.topic_name) : navigate('/chat')}>{t('learn.askTutor')}</button></div><button className="tutor-open" onClick={() => navigate(worstTopic ? `/mistakes/${worstTopic.topic_id}` : '/mistakes')}>{t('review.start')}<ChevronRight size={20} /></button><button className="tutor-dismiss" onClick={() => setTipDismissed(true)} aria-label={t('home.dismiss')}><X size={14} /></button></aside>}
     <dialog id="rating-dialog" className="rating-dialog" aria-labelledby="rating-title" onClick={event => { if (event.target === event.currentTarget) event.currentTarget.close() }}>
       <div className="rating-dialog-content"><span className="icon-medallion gold"><DesignIcon name="star" /></span><h2 id="rating-title">{t('home.tileRating')}</h2><strong className="rating-score">{home?.daily_streak?.points ?? 0}</strong><p>{t('home.pointsExplanation')}</p><p>{t('home.streakDays', { count: home?.daily_streak?.current_days ?? 0 })}</p><form method="dialog"><button className="home-start">{t('home.dismiss')}</button></form></div>
     </dialog>

@@ -159,3 +159,13 @@
   .suggestions-heading { margin-top: 20px; }
   .chat-compose textarea { font-size: 16px; }
 }
+.review-overview { padding: 26px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+.review-overview h1 { font-size: 25px; font-weight: 700; }
+.review-overview p { color: var(--muted-foreground); line-height: 1.5; }
+.review-count { font-size: 44px; color: var(--primary); line-height: 1; }
+.review-topic-list { display: flex; flex-direction: column; gap: 12px; }
+.review-topic { display: flex; align-items: center; gap: 14px; padding: 18px; text-align: left; }
+.review-topic>span:nth-child(2) { flex: 1; min-width: 0; }
+.review-topic strong { display: block; overflow-wrap: anywhere; }
+.review-topic small,.review-row-count { display: block; margin-top: 5px; color: var(--muted-foreground); font-size: 11px; }
+.review-ai-link { margin-top: 9px; color: var(--primary); font-size: 13px; text-decoration: underline; }

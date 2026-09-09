@@ -2,10 +2,12 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Check, CircleX, Flag, ListChecks, X } from 'lucide-react'
 import type { AttemptState } from '../api/examService'
 import { useT } from '../context/LocaleContext'
+import { useMistakeTopics } from '../api/mistakeService'
 
 interface ResultState {
   attempt: AttemptState
   templateTitle: string
+  reviewTopicId?: string
 }
 
 function isResultState(value: unknown): value is ResultState {
@@ -24,6 +26,8 @@ export function ResultPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const state = isResultState(location.state) ? location.state : null
+  const reviewTopics = useMistakeTopics(!!state?.reviewTopicId)
+  const remaining = reviewTopics.data?.find(topic => topic.topic_id === state?.reviewTopicId)?.remaining_count ?? 0
 
   if (!state) {
     return (
@@ -95,6 +99,7 @@ export function ResultPage() {
         </div>
       </div>
 
+      {state.reviewTopicId && <div className="mt-6 w-full"><p>{reviewTopics.isPending ? t('home.loading') : reviewTopics.isError ? t('home.loadError') : remaining ? t('review.count', { count: remaining }) : t('review.cleared')}</p><button className="home-start" onClick={() => navigate(`/mistakes/${state.reviewTopicId}`, { replace: true })}>{t(remaining ? 'review.repeat' : 'review.back')}</button></div>}
       <button
         onClick={() => navigate('/chat/new', { state: { prompt: t('learn.resultPrompt', { title: templateTitle, correct: attempt.correct_count, mistakes: attempt.mistake_count }) } })}
         className="press w-full rounded-2xl border border-primary/30 bg-card text-primary py-4 text-[14px] font-semibold mt-8"
@@ -102,7 +107,7 @@ export function ResultPage() {
         {t('learn.askTutor')}
       </button>
       <button
-        onClick={() => navigate('/tests', { replace: true })}
+        onClick={() => navigate(state.reviewTopicId ? '/mistakes' : '/tests', { replace: true })}
         className="press w-full bg-primary text-primary-foreground rounded-full py-4 text-[15px] font-semibold shadow-brand mt-10"
       >
         {t('result.done')}

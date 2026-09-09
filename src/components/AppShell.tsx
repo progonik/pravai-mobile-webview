@@ -6,6 +6,7 @@ import { AppTabbar } from './AppTabbar'
 import { WelcomeScreen } from './WelcomeScreen'
 import { HomePage } from '../pages/HomePage'
 import { NotificationsPage } from '../pages/NotificationsPage'
+import { MistakesPage } from '../pages/MistakesPage'
 import { TestsPage } from '../pages/TestsPage'
 import { TestTypePage } from '../pages/TestTypePage'
 import { QuizIntroPage } from '../pages/QuizIntroPage'
@@ -89,6 +90,9 @@ export function AppShell() {
           <Route index element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/mistakes" element={<MistakesPage />} />
+          <Route path="/mistakes/:topicId" element={<MistakesPage />} />
+          <Route path="/mistakes/:topicId/quiz" element={<QuizPage />} />
           <Route path="/tests" element={<TestsPage />} />
           <Route path="/tests/:mode" element={<TestTypePage />} />
           <Route path="/quiz/:templateId/intro" element={<QuizIntroPage />} />
